@@ -54,9 +54,8 @@ class Spiro:
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
 		M = 5000
-		i = range(0, int(M))
-		Z = map(lambda x:  2*math.pi*x/M, i)
-		lines = map(lambda z:[self.FF(z,t), self.FF(z + 1.9*math.pi,t)], Z)
+		Z = (2*math.pi*i/M for i in range(0, int(M)))
+		lines = ([self.FF(z,t), self.FF(z + 1.9*math.pi,t)] for z in Z)
 		#lines = map(lambda z:[self.Simple(z,t), self.Simple(z + math.pi/2,t)], Z)
 		#lines = map(lambda z:[self.Rect(z,t), self.Rect(-z,t)], Z)
 		self.draw_lines(lines)
