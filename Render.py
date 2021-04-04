@@ -9,11 +9,13 @@ import cairo
 from PIL import Image, ImageDraw, ImageTk
 from cairo import ImageSurface, Context, FORMAT_ARGB32
 from math import sin, cos, pi
+from shapely.geometry import LineString
+
 
 class Spiro:
-	width = 640
-	height = 640
-	radius = 300
+	width = 440
+	height = 440
+	radius = 200
 
 	COLORS_NUMBER = 512
 	Pens = []
@@ -42,7 +44,7 @@ class Spiro:
 		# Draw something
 		self.t = t
 		tt = 1.5*t
-		M =300
+		M =1000
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z,tt), self.FF(z + 1.8*math.pi,tt)] for z in Z)
 		self.draw_cr_test()
@@ -56,7 +58,7 @@ class Spiro:
 		self.t = t
 		pim = Image.new('RGBA', (self.width, self.height), (255, 255, 255, 64))
 		self.drw = aggdraw.Draw(pim)
-		M = 1000
+		M = 400
 		for i in range(0, int(M)):
 			z =2*math.pi*i/M
 			xy0 = self.FF(z,t)
@@ -66,13 +68,14 @@ class Spiro:
 		return pim
 
 	def RenderMap(self, t):
-		self.t = 1.5*t
+		self.t = t
+		tt = 1.5*t
 		pim = Image.new('RGBA', (self.width, self.height), (255, 255, 255, 64))
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
-		M = 6000
+		M = 5000
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
-		lines = ([self.FF(z,t), self.FF(z + 1.9*math.pi,t)] for z in Z)
+		lines = ([self.FF(z,tt), self.FF(z + 1.8*math.pi,tt)] for z in Z)
 		#lines = map(lambda z:[self.Simple(z,t), self.Simple(z + math.pi/2,t)], Z)
 		#lines = map(lambda z:[self.Rect(z,t), self.Rect(-z,t)], Z)
 		self.draw_lines(lines)
@@ -182,13 +185,16 @@ class Spiro:
 			self.context.stroke()
 
 	def poly(self, a, b):
-		l1 = math.dist(a[0], b[0])
-		l2 = math.dist(a[0], b[1])
-		if l1<l2:
-			p = [a[0],a[1],b[1],b[0]]
+		line1 = LineString([a[0], a[1]]) 
+		line2 = LineString([b[0], b[1]]) 
+		p = line1.intersection(line2)
+		if p:
+			#print(p.x,p.y) 
+			pn = [a[0], b[0], (p.x, p.y) ,a[1], b[1]]
 		else:
-			p = [a[0],a[1],b[0],b[1]]
-		return p
+			pn = [a[0], a[1], b[1], b[0]]
+
+		return pn
 
 	def draw_cr_test(self):
 		for i in range(100):
@@ -196,6 +202,26 @@ class Spiro:
 				self.context.rectangle( i*5.0, j*30.0, 500 - i*5, 25)
 				self.context.set_source_rgba( 0, 0, 1.0, 0.05)
 				self.context.fill()
+
+
+	def CreateLinearPattern2(self, p):	
+		x = (p[0][0] + p[1][0])/2
+		y = (p[0][1] + p[1][1])/2
+		linpat = cairo.LinearGradient(x,  y, p[2][0], p[2][1])
+		linpat.add_color_stop_rgba(0.0, 0.0, 0.0, 1.0, 0.1)
+		linpat.add_color_stop_rgba(0.7, 0.0, 0.0, 1.0, 0.2)
+		linpat.add_color_stop_rgba(0.8, 0.0, 0.0, 1.0, 0.3)
+		linpat.add_color_stop_rgba(1.0, 0.0, 0.0, 1.0, 0.9)
+		return linpat
+
+	def draw_cr_triangle(self, p):
+		self.context.move_to(p[0][0], p[0][1])
+		self.context.line_to(p[1][0], p[1][1])
+		self.context.line_to(p[2][0], p[2][1])
+		self.context.close_path()
+		lp = self.CreateLinearPattern2(p)
+		self.context.set_source(lp)
+		self.context.fill()
 
 	def draw_cr_polygons(self, lines):
 
@@ -207,21 +233,27 @@ class Spiro:
 		for i, j in zip(l[0::], l[-1::]+l[0::1]):
 			
 			p = self.poly(i,j)
-			self.context.move_to(p[0][0], p[0][1])
-			self.context.line_to(p[1][0], p[1][1])
-			#self.context.stroke()	
-			self.context.line_to(p[2][0], p[2][1])	
-			self.context.line_to(p[3][0], p[3][1])	
-			
-			#self.context.line_to(i[0][0], i[0][1])
-			self.context.close_path()					
+			if len(p)>4:
+				self.draw_cr_triangle(p[:3:])
+				self.draw_cr_triangle([p[3],p[4],p[2]])
+				self.context.set_source_rgba(1.0 , 0, 0.0, 0.1)
+			else:
+				self.context.move_to(p[0][0], p[0][1])
+				self.context.line_to(p[1][0], p[1][1])
+				#self.context.stroke()	
+				self.context.line_to(p[2][0], p[2][1])	
+				self.context.line_to(p[3][0], p[3][1])	
+				#self.context.line_to(i[0][0], i[0][1])
+				self.context.close_path()				
+				self.context.set_source_rgba(0.0 , 0, 1.0, 0.1)	
+				self.context.fill()
 			x = x + 0
 			#self.context.set_source_rgba(1.0 , 0, 0, 0.1)
 			#self.context.stroke_preserve()
 			#self.context.set_source_rgba(0.0 , 0, 1.0, 0.1)
-			lp = self.CreateLinearPattern(p)
-			self.context.set_source(lp)
-			self.context.fill()
+			#lp = self.CreateLinearPattern(p)
+			#self.context.set_source(lp)
+			#self.context.fill()
 
 		#self.context.move_to(l[0][0][0], l[0][0][1])
 		#for li in l:

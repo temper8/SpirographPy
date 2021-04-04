@@ -57,7 +57,10 @@ class SpiroView:
 		self.FPS()
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
-		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
+		self.im = self.canvas.create_image(200,200, image=self.photo)
+		pim2 = self.spiro.RenderMap(t)
+		self.photo2 = ImageTk.PhotoImage(pim2)
+		self.im = self.canvas.create_image(500,500, image=self.photo2)
 
 	def SaveImage(self, pim):
 		if self.saveFlag.get():
