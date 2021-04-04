@@ -6,6 +6,7 @@ import timeit
 import time
 
 from PIL import Image, ImageDraw, ImageTk
+from cairo import ImageSurface, Context, FORMAT_ARGB32
 from math import sin, cos, pi
 
 class Spiro:
@@ -34,6 +35,16 @@ class Spiro:
 		self.height = height
 		self.GeneratePalette()
 
+	def RenderCairo(self, t):
+		self.surface = ImageSurface(FORMAT_ARGB32, self.width, self.height)
+		self.context = Context(self.surface)
+		# Draw something
+		#self.context.scale(w, h)
+		self.context.rectangle(100, 50, 200 + t*100, 100 + t*100)
+		self.context.set_source_rgba(1, 0, 0, 0.8)
+		self.context.fill()
+		pim = Image.frombuffer("RGBA", (self.width, self.height), self.surface.get_data(), "raw", "RGBA", 0, 1)
+		return pim
 
 	def Render(self, t):
 		self.t = t

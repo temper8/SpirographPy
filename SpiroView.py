@@ -52,7 +52,7 @@ class SpiroView:
 
 
 	def draw(self,t):
-		pim = self.spiro.RenderMap(t)
+		pim = self.spiro.RenderCairo(t)
 		self.FPS()
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
