@@ -9,9 +9,9 @@ from PIL import Image, ImageDraw, ImageTk
 from math import sin, cos, pi
 
 class Spiro:
-	width = 700
-	height = 700
-	radius = 450
+	width = 640
+	height = 640
+	radius = 300
 
 	COLORS_NUMBER = 512
 	Pens = []
@@ -53,7 +53,7 @@ class Spiro:
 		pim = Image.new('RGBA', (self.width, self.height), (255, 255, 255, 64))
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
-		M = 5000
+		M = 6000
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z,t), self.FF(z + 1.9*math.pi,t)] for z in Z)
 		#lines = map(lambda z:[self.Simple(z,t), self.Simple(z + math.pi/2,t)], Z)
@@ -72,13 +72,17 @@ class Spiro:
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z,t), self.FF(z + phi*math.pi,t)] for z in Z)
 		self.draw_lines(lines)
+
+		#Z = (2*math.pi*i/M for i in range(0, int(M)))
+		#dots = (self.FF(z,t) for z in Z)
+		#self.draw_dots(dots)
 		self.drw.flush()
 		return pim
 
 
 
 	def FF(self, z, t):
-		k = 5
+		k = 2
 		k1 =  math.trunc(2*t) -7
 		k2 =12
 		k3 = 8
@@ -128,8 +132,14 @@ class Spiro:
 		penIndex = (int)(self.penIndex / 25)
 		d = self.penIndex / 25 - penIndex
 		self.penIndex += 1
-		return aggdraw.Pen(self.avg_clr(penIndex, d), 0.5, 50)
+		return aggdraw.Pen(self.avg_clr(penIndex, d), 0.5, 80)
 		
+
+	def draw_dots(self,dots):	
+		#pen = aggdraw.Pen("red", 0.5, 30)
+		pen = aggdraw.Pen("blue", 1.0, 100)
+		for d in dots:
+			self.drw.rectangle((d[0], d[1], d[0]+1, d[1]+1), pen)
 
 	def draw_lines(self,lines):	
 		#pen = aggdraw.Pen("red", 0.5, 30)
