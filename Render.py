@@ -63,6 +63,20 @@ class Spiro:
 		self.drw.flush()
 		return pim
 
+	def Render2(self, t, phi):
+		self.t = 1.5*t
+		pim = Image.new('RGBA', (self.width, self.height), (255, 255, 255, 64))
+		self.drw = aggdraw.Draw(pim)
+		self.drw.setantialias(True)
+		M = 3000
+		Z = (2*math.pi*i/M for i in range(0, int(M)))
+		lines = ([self.FF(z,t), self.FF(z + phi*math.pi,t)] for z in Z)
+		self.draw_lines(lines)
+		self.drw.flush()
+		return pim
+
+
+
 	def FF(self, z, t):
 		k = 5
 		k1 =  math.trunc(2*t) -7
