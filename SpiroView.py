@@ -43,6 +43,7 @@ class SpiroView:
 		
 		tk.Button(frame_b, text = " start ",  command = self.start).pack(side="top")
 		tk.Button(frame_b, text = " stop ",  command = self.stop).pack(side="top")
+		tk.Button(frame_b, text = " plus ",  command = self.plus).pack(side="top")
 		#self.GeneratePalette()
 		#self.draw_init()
 		frame_a.pack(side="left")
@@ -93,6 +94,13 @@ class SpiroView:
 		self.stop_flag = False
 		self.ani_count = 0
 		self.animate()
+
+	def plus(self):
+		self.stop_flag = False
+		self.ani_count += 1
+		t = self.ani_count/400
+		self.draw(t)
+		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 
 	def stop(self):
 		self.stop_flag = True

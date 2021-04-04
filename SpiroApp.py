@@ -5,4 +5,4 @@ root = tk.Tk()
 
 m = SpiroView(root)
 
-root.mainloop() 
+root.mainloop()  
