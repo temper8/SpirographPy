@@ -65,14 +65,14 @@ class Spiro:
 
 	def Render2(self, t, phi):
 		self.t = 1.5*t
-		pim = Image.new('RGBA', (self.width, self.height), (255, 255, 255, 64))
+		pim = Image.new('RGBA', (self.width, self.height), (255,255, 255, 255))
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
-		M = 3000
+		M = 5500
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z,t), self.FF(z + phi*math.pi,t)] for z in Z)
-		self.draw_lines(lines)
-
+		#self.draw_lines(lines)
+		self.draw_polygons(lines)
 		#Z = (2*math.pi*i/M for i in range(0, int(M)))
 		#dots = (self.FF(z,t) for z in Z)
 		#self.draw_dots(dots)
@@ -150,11 +150,11 @@ class Spiro:
 			#self.drw.line((xy0[0], xy0[1], xy0[0]+1, xy0[1]+1),dot)
 
 	def draw_polygons(self,lines):	
-		pen = aggdraw.Pen("blue",0.1, 1)
+		pen = aggdraw.Pen("red",0.5, 0)
 		l = list(lines)
 		#for li in l:
 		#	self.drw.line((li[0][0], li[0][1], li[1][0], li[1][1]), pen)
-		br = aggdraw.Brush("red", 10)
+		br = aggdraw.Brush("red", 30)
 		for i, j in zip(l[0::], l[-1::]+l[0::1]):
 			p = aggdraw.Path([i[1][0], i[1][1], j[1][0], j[1][1], j[0][0], j[0][1], i[0][0], i[0][1]])
 			self.drw.polygon(p, pen, br)
