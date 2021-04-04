@@ -21,11 +21,11 @@ class SpiroView:
 
 
 		var = tk.DoubleVar()
-		slider1 = tk.Scale( frame_b, variable = var, orient = tk.HORIZONTAL, length = 150, command = self.Slider1Moved )
+		slider1 = tk.Scale( frame_b, variable = var, orient = tk.HORIZONTAL, length = 200, command = self.Slider1Moved )
 		slider1.pack(anchor=tk.CENTER)
 
 		var2= tk.DoubleVar()
-		slider2 = tk.Scale( frame_b, variable = var2, orient = tk.HORIZONTAL, length =150, command = self.Slider2Moved )
+		slider2 = tk.Scale( frame_b, variable = var2, orient = tk.HORIZONTAL, length =200, command = self.Slider2Moved )
 		slider2.pack(anchor=tk.CENTER)
 
 		self.saveFlag = tk.BooleanVar()
@@ -87,7 +87,7 @@ class SpiroView:
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 		self.ani_count = self.ani_count + 1
 		if not self.stop_flag and (self.ani_count<4000):
-			self.canvas.after(50, self.animate) 
+			self.canvas.after(10, self.animate) 
 
 	def start(self):
 		self.stop_flag = False
@@ -101,17 +101,18 @@ class SpiroView:
 		print("s1 =" ,  v)
 		t = int(v)/100.0
 		self.start_time = t
-		self.draw(t)
+		self.DrawEx(t, self.phi)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)	
 
-
+	phi = 0
 	def Slider2Moved(self, v):
 		#print(v)
-		t = self.start_time
-		phi =  int(v)/150.0
-		print(phi)
-		pim = self.spiro.Render2(t,phi)
+		self.phi =  int(v)/150.0
+		self.DrawEx( self.start_time, self.phi)
+		self.label_a["text"] = "t = " + "{:5.3f}".format(self.start_time)	
+	
+	def DrawEx(self, t, phi):
+		pim = self.spiro.Render2(t, phi)
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
 		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
-		self.label_a["text"] = "t = " + "{:5.3f}".format(t)	
