@@ -39,9 +39,13 @@ class Spiro:
 		self.surface = ImageSurface(FORMAT_ARGB32, self.width, self.height)
 		self.context = Context(self.surface)
 		# Draw something
-		#self.context.scale(w, h)
-		self.context.rectangle(100, 50, 200 + t*100, 100 + t*100)
-		self.context.set_source_rgba(1, 0, 0, 0.8)
+		self.t = t
+		tt = 1.5*t
+		M = 5000
+		Z = (2*math.pi*i/M for i in range(0, int(M)))
+		lines = ([self.FF(z,tt), self.FF(z + 1.2*math.pi,tt)] for z in Z)
+		#self.draw_cr_lines(lines)
+		self.draw_cr_polygons(lines)
 		self.context.fill()
 		pim = Image.frombuffer("RGBA", (self.width, self.height), self.surface.get_data(), "raw", "RGBA", 0, 1)
 		return pim
@@ -93,7 +97,7 @@ class Spiro:
 
 
 	def FF(self, z, t):
-		k = 2
+		k = 1
 		k1 =  math.trunc(2*t) -7
 		k2 =12
 		k3 = 8
@@ -121,6 +125,7 @@ class Spiro:
 		y = math.fabs(z) - 2.0
 		r = 0.3
 		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
+
 
 	def draw_line(self,xy0, xy1):	
 		pen = aggdraw.Pen("blue", 1.0, 10)
@@ -151,6 +156,29 @@ class Spiro:
 		pen = aggdraw.Pen("blue", 1.0, 100)
 		for d in dots:
 			self.drw.rectangle((d[0], d[1], d[0]+1, d[1]+1), pen)
+
+	
+
+	def draw_cr_lines(self, lines):
+		#self.context.rectangle(100, 50, 200 + t*100, 100 + t*100)
+		for li in lines:
+			self.context.move_to(li[0][0], li[0][1])
+			self.context.line_to(li[1][0], li[1][1])				
+			self.context.set_source_rgba(0.8, 0, 0, 0.1)
+			self.context.set_line_width(2.0)
+			self.context.stroke()
+
+	def draw_cr_polygons(self, lines):
+		#self.context.rectangle(100, 50, 200 + t*100, 100 + t*100)
+		l = list(lines)
+		for i, j in zip(l[0::], l[-1::]+l[0::1]):
+			self.context.move_to(i[0][0], i[0][1])
+			self.context.line_to(i[1][0], i[1][1])	
+			self.context.line_to(j[1][0], j[1][1])	
+			self.context.line_to(j[1][0], j[1][1])										
+			self.context.set_source_rgba(0.8, 0, 0, 0.1)
+			self.context.fill()
+
 
 	def draw_lines(self,lines):	
 		#pen = aggdraw.Pen("red", 0.5, 30)
