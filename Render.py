@@ -44,11 +44,11 @@ class Spiro:
 		# Draw something
 		self.t = t
 		tt = 1.5*t
-		M =1000
+		M =500
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z,tt), self.FF(z + 1.8*math.pi,tt)] for z in Z)
 		self.draw_cr_test()
-		self.draw_cr_polygons(lines)
+		self.draw_cr_polygons_triangle(lines)
 		#self.draw_cr_lines(lines)
 		self.context.fill()
 		pim = Image.frombuffer("RGBA", (self.width, self.height), self.surface.get_data(), "raw", "RGBA", 0, 1)
@@ -223,8 +223,7 @@ class Spiro:
 		self.context.set_source(lp)
 		self.context.fill()
 
-	def draw_cr_polygons(self, lines):
-
+	def draw_cr_polygons_triangle(self, lines):
 		#self.context.rectangle(100, 50, 200 + t*100, 100 + t*100)
 		l = list(lines)
 		x = 0.0
