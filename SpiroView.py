@@ -13,6 +13,12 @@ class SpiroView:
 	height = 700
 	radius = 450
     
+	def make_slider(self, parent, cmd):
+		var = tk.DoubleVar()
+		slider = tk.Scale( parent, variable = var, orient = tk.HORIZONTAL, length = 200, command = cmd )
+		slider.pack(anchor=tk.CENTER)
+		return var		
+
 	def __init__(self, root):
 		frame_a = tk.Frame()
 		frame_b = tk.Frame()
@@ -20,13 +26,11 @@ class SpiroView:
 		self.canvas.pack()
 
 
-		var = tk.DoubleVar()
-		slider1 = tk.Scale( frame_b, variable = var, orient = tk.HORIZONTAL, length = 200, command = self.Slider1Moved )
-		slider1.pack(anchor=tk.CENTER)
+		var = self.make_slider( frame_b, cmd = self.Slider1Moved)
 
-		var2= tk.DoubleVar()
-		slider2 = tk.Scale( frame_b, variable = var2, orient = tk.HORIZONTAL, length =200, command = self.Slider2Moved )
-		slider2.pack(anchor=tk.CENTER)
+
+		var2= self.make_slider( frame_b, cmd = self.Slider2Moved)
+
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
@@ -49,7 +53,7 @@ class SpiroView:
 		
 		self.RenderVar = tk.IntVar()
 		self.RenderVar.set(0)
-		tk.Radiobutton(frame_b, text="IggDraw", variable=self.RenderVar, value = 0, command=lambda : self.update()) .pack(side="top")
+		tk.Radiobutton(frame_b, text="IggDraw", variable=self.RenderVar, value = 0, command=lambda : self.update()).pack(side="top")
 		tk.Radiobutton(frame_b, text="Cairo", variable=self.RenderVar, value = 1, command=lambda : self.update()).pack(side="top")
 
 		frame_a.pack(side="left")
@@ -120,22 +124,24 @@ class SpiroView:
 	def stop(self):
 		self.stop_flag = True
 
+
+	time_pos = 0
+	shift = 0
 	def Slider1Moved(self, v):
 		print("s1 =" ,  v)
 		t = int(v)/100.0
-		self.start_time = t
-		self.DrawEx(t, self.phi)
+		self.time_pos = t
+		self.DrawEx(t, self.shift)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)	
 
-	phi = 0
 	def Slider2Moved(self, v):
 		#print(v)
-		self.phi =  int(v)/150.0
-		self.DrawEx( self.start_time, self.phi)
-		self.label_a["text"] = "t = " + "{:5.3f}".format(self.start_time)	
+		self.shift =  int(v)/150.0
+		self.DrawEx( self.start_time, self.shift)
+		self.label_a["text"] = "t = " + "{:5.3f}".format(self.time_pos)	
 	
-	def DrawEx(self, t, phi):
-		pim = self.spiro.Render2(t, phi)
+	def DrawEx(self, t, shift):
+		pim = self.spiro.Render2(t, shift)
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
 		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
