@@ -13,10 +13,13 @@ class SpiroView:
 	height = 700
 	radius = 450
     
-	def make_slider(self, parent, cmd):
+	def make_slider(self, parent, label, cmd):
+
 		var = tk.DoubleVar()
 		slider = tk.Scale( parent, variable = var, orient = tk.HORIZONTAL, length = 200, command = cmd )
 		slider.pack(anchor=tk.CENTER)
+		label = tk.Label(master=parent, text=label)
+		label.pack(side = 'top')
 		return var		
 
 	def __init__(self, root):
@@ -25,12 +28,9 @@ class SpiroView:
 		self.canvas = tk.Canvas(frame_a, width=self.width, height=self.height)
 		self.canvas.pack()
 
+		var = self.make_slider( frame_b, label ="time slider", cmd = self.Slider1Moved)
 
-		var = self.make_slider( frame_b, cmd = self.Slider1Moved)
-
-
-		var2= self.make_slider( frame_b, cmd = self.Slider2Moved)
-
+		var2= self.make_slider( frame_b, label ="shift slider", cmd = self.Slider2Moved)
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
