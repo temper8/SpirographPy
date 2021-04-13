@@ -46,21 +46,33 @@ class SpiroView:
 		tk.Button(frame_b, text = " plus ",  command = self.plus).pack(side="top")
 		#self.GeneratePalette()
 		#self.draw_init()
+		
+		self.RenderVar = tk.IntVar()
+		self.RenderVar.set(0)
+		tk.Radiobutton(frame_b, text="IggDraw", variable=self.RenderVar, value = 0, command=lambda : self.update()) .pack(side="top")
+		tk.Radiobutton(frame_b, text="Cairo", variable=self.RenderVar, value = 1, command=lambda : self.update()).pack(side="top")
+
 		frame_a.pack(side="left")
 		frame_b.pack(side="left")
 		self.spiro = Spiro(self.width,self.height)  
 		self.draw(0)
 
+	def update(self):
+		t = self.ani_count/400
+		self.draw(t)
+
 
 	def draw(self,t):
-		pim = self.spiro.RenderCairo(t)
+		print(self.RenderVar.get())
+		if self.RenderVar.get() == 0:
+			pim = self.spiro.RenderMap(t)
+		else:	
+			pim = self.spiro.RenderCairo(t)
 		self.FPS()
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
-		self.im = self.canvas.create_image(200,200, image=self.photo)
-		pim2 = self.spiro.RenderMap(t)
-		self.photo2 = ImageTk.PhotoImage(pim2)
-		self.im = self.canvas.create_image(500,500, image=self.photo2)
+		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
+
 
 	def SaveImage(self, pim):
 		if self.saveFlag.get():

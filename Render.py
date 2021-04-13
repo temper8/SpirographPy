@@ -44,11 +44,12 @@ class Spiro:
 		# Draw something
 		self.t = t
 		tt = 1.5*t
-		M =500
+		M =1000
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
-		lines = ([self.FF(z,tt), self.FF(z + 1.8*math.pi,tt)] for z in Z)
+		lines = ([self.FF(z,tt), self.FF(z + 1.5*math.pi,tt)] for z in Z)
 		self.draw_cr_test()
-		self.draw_cr_polygons_triangle(lines)
+		self.draw_cr_polygons(lines)
+		#self.draw_cr_polygons_triangle(lines)
 		#self.draw_cr_lines(lines)
 		self.context.fill()
 		pim = Image.frombuffer("RGBA", (self.width, self.height), self.surface.get_data(), "raw", "RGBA", 0, 1)
@@ -75,7 +76,7 @@ class Spiro:
 		self.drw.setantialias(True)
 		M = 5000
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
-		lines = ([self.FF(z,tt), self.FF(z + 1.8*math.pi,tt)] for z in Z)
+		lines = ([self.FF(z,tt), self.FF(z + 1.5*math.pi,tt)] for z in Z)
 		#lines = map(lambda z:[self.Simple(z,t), self.Simple(z + math.pi/2,t)], Z)
 		#lines = map(lambda z:[self.Rect(z,t), self.Rect(-z,t)], Z)
 		self.draw_lines(lines)
@@ -85,14 +86,14 @@ class Spiro:
 
 	def Render2(self, t, phi):
 		self.t = 1.5*t
-		pim = Image.new('RGBA', (self.width, self.height), (255,255, 255, 255))
+		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 255))
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
-		M = 5500
+		M = 8500
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z,t), self.FF(z + phi*math.pi,t)] for z in Z)
-		#self.draw_lines(lines)
-		self.draw_polygons(lines)
+		self.draw_lines(lines)
+		#self.draw_polygons(lines)
 		#Z = (2*math.pi*i/M for i in range(0, int(M)))
 		#dots = (self.FF(z,t) for z in Z)
 		#self.draw_dots(dots)
@@ -102,7 +103,7 @@ class Spiro:
 
 
 	def FF(self, z, t):
-		k = 2
+		k = 3
 		k1 =  math.trunc(2*t) -7
 		k2 =12
 		k3 = 8
@@ -149,10 +150,21 @@ class Spiro:
 
 	penIndex = 0
 	count = 0
-	def GetPen(self):
+	def GetCairoClr(self):
 		penIndex = (int)(self.penIndex / 25)
-		d = self.penIndex / 25 - penIndex
+		d = self.penIndex / 25.0 - penIndex
+		c1 = self.Colors[penIndex]
+		c2=  self.Colors[penIndex+1]
+		r = (c1[0]*(1-d) + c2[0]*d)/256
+		g = (c1[1]*(1-d) + c2[1]*d)/256
+		b = (c1[2]*(1-d) + c2[2]*d)/256
+		return (r,g,b)
+		
+
+	def GetPen(self):
 		self.penIndex += 1
+		penIndex = (int)(self.penIndex / 25)
+		d = self.penIndex / 25.0 - penIndex		
 		return aggdraw.Pen(self.avg_clr(penIndex, d), 0.5, 80)
 		
 
@@ -262,11 +274,38 @@ class Spiro:
 		#self.context.set_line_width(1.0)
 		#self.context.stroke()			
 
+	def draw_cr_polygons(self, lines):
+		#self.context.rectangle(100, 50, 200 + t*100, 100 + t*100)
+		l = list(lines)
+		x = 0.0
+		dx = 1.0/len(l)
+		clr = self.GetCairoClr()
+		self.context.set_operator(cairo.OPERATOR_OVER)
+		#print(clr)
+		#self.context.set_source_rgba(0.0, 0.0, 0.0, 1.0)					
+		for i, j in zip(l[0::], l[-1::]+l[0::1]):		
+			p = [i[0], i[1], j[1], j[0]]
+			self.context.move_to(p[0][0], p[0][1])
+			self.context.line_to(p[1][0], p[1][1])
+			self.context.line_to(p[2][0], p[2][1])	
+			self.context.line_to(p[3][0], p[3][1])	
+			self.context.close_path()				
+			self.context.set_source_rgba(clr[2], clr[1], clr[0], 0.1)	
+			self.context.fill()
+			self.context.move_to(p[0][0], p[0][1])
+			self.context.line_to(p[1][0], p[1][1])
+			self.context.set_line_width(0.95)
+			self.context.set_source_rgba(clr[2], clr[1], clr[0], 0.1)
+			self.context.stroke()
+
+
+		self.context.fill()			
+
 
 
 	def draw_lines(self,lines):	
-		#pen = aggdraw.Pen("red", 0.5, 30)
-		pen = self.GetPen()
+		pen = aggdraw.Pen("blue", 0.5, 10)
+		#pen = self.GetPen()
 		for l in lines:
 			self.drw.line((l[0][0], l[0][1], l[1][0], l[1][1]), pen)
 			#dot = aggdraw.Pen("blue", 1.0, 100)
