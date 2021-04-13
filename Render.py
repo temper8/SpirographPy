@@ -15,7 +15,7 @@ from shapely.geometry import LineString
 class Spiro:
 	width = 440
 	height = 440
-	radius = 200
+	radius = 300
 
 	COLORS_NUMBER = 512
 	Pens = []
@@ -105,7 +105,7 @@ class Spiro:
 	def FF(self, z, t):
 		k = 3
 		k1 =  math.trunc(2*t) -7
-		k2 =12
+		k2 =17
 		k3 = 8
 		l = 0.5
 		a =  0.5*sin(2*pi*t)
