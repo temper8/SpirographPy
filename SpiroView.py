@@ -18,8 +18,9 @@ class SpiroView:
 
 	def UpdateVar(self, var):
 		print(var + " = {}".format(self.Vars[var].get()))
+		self.DrawEx()
 
-	def make_slider(self, parent, var, interval, label, cmd):
+	def make_slider(self, parent, var, interval, label, cmd = None):
 		#var = tk.DoubleVar(name = VarName)
 		self.Vars[var._name] = var
 		var.trace_add('write', lambda var, indx, mode: self.UpdateVar(var))
@@ -45,7 +46,7 @@ class SpiroView:
 		self.make_slider( frame_b, label ="shift slider", var =v, interval = (0.0, 1.0, 0.01), cmd = self.Slider2Moved)
 
 		v = tk.IntVar(name = "M")
-		self.make_slider( frame_b, label ="Number of lines", var =v, interval = (100, 10000, 100), cmd = self.Slider2Moved)
+		self.make_slider( frame_b, label ="Number of lines", var =v, interval = (100, 10000, 100))
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
