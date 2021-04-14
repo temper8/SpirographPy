@@ -82,15 +82,17 @@ class Spiro:
 		self.drw.flush()
 		return pim
 
-	def Render2(self, t, phi):
-		self.t = 1.5*t
+	def Render2(self, vars):
+		t = 1.5*vars["Time"].get()
+		shift = math.pi * vars["Shift"].get()
 		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 255))
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
-		M = 8500
+		M = vars["M"].get()
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
-		lines = ([self.FF(z,t), self.FF(z + phi*math.pi,t)] for z in Z)
-		self.draw_lines(lines)
+		lines = ([self.FF(z,t), self.FF(z + shift,t)] for z in Z)
+		a = math.log(25000/M)
+		self.draw_lines(lines, alpha = int(a*20), thickness= a/5) 
 		#self.draw_polygons(lines)
 		#Z = (2*math.pi*i/M for i in range(0, int(M)))
 		#dots = (self.FF(z,t) for z in Z)
@@ -300,9 +302,9 @@ class Spiro:
 		self.context.fill()			
 
 
-
-	def draw_lines(self,lines):	
-		pen = aggdraw.Pen("blue", 0.5, 10)
+	def draw_lines(self, lines, alpha = 10, thickness = 0.5) :	
+		print(alpha, thickness)
+		pen = aggdraw.Pen("blue", 0.5, alpha)
 		#pen = self.GetPen()
 		for l in lines:
 			self.drw.line((l[0][0], l[0][1], l[1][0], l[1][1]), pen)
