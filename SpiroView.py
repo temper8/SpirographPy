@@ -39,14 +39,14 @@ class SpiroView:
 		self.canvas = tk.Canvas(frame_a, width=w, height=h)
 		self.canvas.pack()
 
-		v = tk.DoubleVar(name = "Time")
-		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 1.0, 0.01), cmd = self.Slider1Moved)
+		v = tk.IntVar(name = "M")
+		self.make_slider( frame_b, label ="Number of lines", var = v, interval = (100, 10000, 100))
 
 		v = tk.DoubleVar(name = "Shift")
-		self.make_slider( frame_b, label ="shift slider", var =v, interval = (0.0, 1.0, 0.01), cmd = self.Slider2Moved)
+		self.make_slider( frame_b, label ="shift slider", var = v, interval = (0.01, 1.0, 0.01), cmd = self.Slider2Moved)
 
-		v = tk.IntVar(name = "M")
-		self.make_slider( frame_b, label ="Number of lines", var =v, interval = (100, 10000, 100))
+		v = tk.DoubleVar(name = "Time")
+		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 1.0, 0.01), cmd = self.Slider1Moved)
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
