@@ -13,9 +13,6 @@ from shapely.geometry import LineString
 
 
 class Spiro:
-	width = 440
-	height = 440
-	radius = 300
 
 	COLORS_NUMBER = 512
 	Pens = []
@@ -33,9 +30,10 @@ class Spiro:
 			self.Pens.append(aggdraw.Pen((r, g, b), 0.5, alpha))
 
 
-	def __init__(self, width, height):
-		self.width = width
-		self.height = height
+	def __init__(self, parameters):
+		self.width = parameters["Width"]
+		self.height = parameters["Height"]
+		self.radius = parameters["Radius"]
 		self.GeneratePalette()
 
 	def RenderCairo(self, t):

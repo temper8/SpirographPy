@@ -9,12 +9,10 @@ from math import sin, cos, pi
 from Render import Spiro
 
 class SpiroView:
-	width = 700
-	height = 700
-	radius = 450
-    
-	def make_slider(self, parent, label, cmd):
 
+	Parameters ={"Width": 700, "Height": 700, "Radius" : 350}
+
+	def make_slider(self, parent, label, cmd):
 		var = tk.DoubleVar()
 		slider = tk.Scale( parent, variable = var, orient = tk.HORIZONTAL, length = 200, command = cmd )
 		slider.pack(anchor=tk.CENTER)
@@ -23,9 +21,11 @@ class SpiroView:
 		return var		
 
 	def __init__(self, root):
+		w = self.Parameters["Width"]
+		h = self.Parameters["Height"]
 		frame_a = tk.Frame()
 		frame_b = tk.Frame()
-		self.canvas = tk.Canvas(frame_a, width=self.width, height=self.height)
+		self.canvas = tk.Canvas(frame_a, width=w, height=h)
 		self.canvas.pack()
 
 		var = self.make_slider( frame_b, label ="time slider", cmd = self.Slider1Moved)
@@ -58,7 +58,7 @@ class SpiroView:
 
 		frame_a.pack(side="left")
 		frame_b.pack(side="left")
-		self.spiro = Spiro(self.width,self.height)  
+		self.spiro = Spiro(self.Parameters)  
 		self.draw(0)
 
 	def update(self):
