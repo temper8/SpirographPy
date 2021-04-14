@@ -93,19 +93,11 @@ class Spiro:
 		lines = ([self.FF(z,t), self.FF(z + shift,t)] for z in Z)
 		a = math.log(25000/M)
 		self.draw_lines(lines, alpha = int(a*20), thickness= a/5) 
-		#self.draw_polygons(lines)
-		#Z = (2*math.pi*i/M for i in range(0, int(M)))
-		#dots = (self.FF(z,t) for z in Z)
-		#self.draw_dots(dots)
 		self.drw.flush()
 		return pim
 
-
-
-	def FF(self, z, t):
-		k = 3
+	def FF(self, z, t, k = 3, k2 = 17):
 		k1 =  math.trunc(2*t) -7
-		k2 =17
 		k3 = 8
 		l = 0.5
 		a =  0.5*sin(2*pi*t)
