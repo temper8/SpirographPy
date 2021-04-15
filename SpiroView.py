@@ -25,7 +25,7 @@ class SpiroView:
 		self.Vars[var._name] = var
 		var.trace_add('write', lambda var, indx, mode: self.UpdateVar(var))
 		#res = (interval[1] - interval[0])/100
-		slider = tk.Scale( parent, variable = var, orient = tk.HORIZONTAL, from_=interval[0], to=interval[1], resolution=interval[2], length = 200, command = cmd )
+		slider = tk.Scale( parent, variable = var, orient = tk.HORIZONTAL, from_=interval[0], to=interval[1], resolution=interval[2], length = 250, command = cmd )
 		slider.pack(anchor=tk.CENTER)
 		label = tk.Label(master=parent, text=label)
 		label.pack(side = 'top')
@@ -52,7 +52,7 @@ class SpiroView:
 		self.make_slider( frame_b, label ="shift slider", var = v, interval = (0.01, 1.0, 0.01))
 
 		v = tk.DoubleVar(name = "Time")
-		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 4.0, 0.002))
+		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 20.0, 0.01))
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
@@ -124,11 +124,11 @@ class SpiroView:
 		
 
 	def animate(self):
-		t = self.ani_count/200
+		t = self.ani_count/400
 		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 		self.ani_count = self.ani_count + 1
-		if not self.stop_flag and (self.ani_count<4000):
+		if not self.stop_flag and (self.ani_count<8000):
 			self.canvas.after(10, self.animate) 
 
 	def start(self):
