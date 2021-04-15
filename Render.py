@@ -95,8 +95,10 @@ class Spiro:
 
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z, t, K, K2), self.FF(z + shift, t, K, K2)] for z in Z)
-		a = math.log(25000/M)
-		self.draw_lines(lines, alpha = int(a*20), thickness= a/3) 
+		a = 1 - (M-100)/10000
+		#a = a*a
+		print(a)
+		self.draw_lines(lines, alpha = int(a*255), thickness= 1.5*a+0.9) 
 		self.drw.flush()
 		return pim
 
