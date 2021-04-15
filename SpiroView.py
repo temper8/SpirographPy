@@ -39,14 +39,20 @@ class SpiroView:
 		self.canvas = tk.Canvas(frame_a, width=w, height=h)
 		self.canvas.pack()
 
+		v = tk.IntVar(name = "K")
+		self.make_slider( frame_b, label ="K", var = v, interval = (1, 30, 1))
+
+		v = tk.IntVar(name = "K2")
+		self.make_slider( frame_b, label ="K2", var = v, interval = (1, 30, 1))
+
 		v = tk.IntVar(name = "M")
 		self.make_slider( frame_b, label ="Number of lines", var = v, interval = (100, 10000, 100))
 
 		v = tk.DoubleVar(name = "Shift")
-		self.make_slider( frame_b, label ="shift slider", var = v, interval = (0.01, 1.0, 0.01), cmd = self.Slider2Moved)
+		self.make_slider( frame_b, label ="shift slider", var = v, interval = (0.01, 1.0, 0.01))
 
 		v = tk.DoubleVar(name = "Time")
-		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 1.0, 0.01), cmd = self.Slider1Moved)
+		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 4.0, 0.002))
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
@@ -119,7 +125,7 @@ class SpiroView:
 
 	def animate(self):
 		t = self.ani_count/200
-		self.draw(t)
+		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 		self.ani_count = self.ani_count + 1
 		if not self.stop_flag and (self.ani_count<4000):
