@@ -89,10 +89,12 @@ class Spiro:
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
 		M = vars["M"].get()
+		K = vars["K"].get()
+		K2 = vars["K2"].get()
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
-		lines = ([self.FF(z,t), self.FF(z + shift,t)] for z in Z)
+		lines = ([self.FF(z, t, K, K2), self.FF(z + shift, t, K, K2)] for z in Z)
 		a = math.log(25000/M)
-		self.draw_lines(lines, alpha = int(a*20), thickness= a/5) 
+		self.draw_lines(lines, alpha = int(a*20), thickness= a/3) 
 		self.drw.flush()
 		return pim
 
