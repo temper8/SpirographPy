@@ -7,26 +7,52 @@ import timeit
 from PIL import Image, ImageDraw, ImageTk
 from math import sin, cos, pi
 from Render import Spiro
+def my_callback(var, indx, mode):
+	print(var)
+	#print("Traced variable {}".format(var.get()))
 
 class SpiroView:
-	width = 700
-	height = 700
-	radius = 450
-    
+
+	Parameters ={"Width": 700, "Height": 700, "Radius" : 350, "Time": 0.0, "Shift": 1.0}
+	Vars = {}
+
+	def UpdateVar(self, var):
+		print(var + " = {}".format(self.Vars[var].get()))
+		self.DrawEx()
+
+	def make_slider(self, parent, var, interval, label, cmd = None):
+		#var = tk.DoubleVar(name = VarName)
+		self.Vars[var._name] = var
+		var.trace_add('write', lambda var, indx, mode: self.UpdateVar(var))
+		#res = (interval[1] - interval[0])/100
+		slider = tk.Scale( parent, variable = var, orient = tk.HORIZONTAL, from_=interval[0], to=interval[1], resolution=interval[2], length = 250, command = cmd )
+		slider.pack(anchor=tk.CENTER)
+		label = tk.Label(master=parent, text=label)
+		label.pack(side = 'top')
+		return var		
+
 	def __init__(self, root):
+		w = self.Parameters["Width"]
+		h = self.Parameters["Height"]
 		frame_a = tk.Frame()
 		frame_b = tk.Frame()
-		self.canvas = tk.Canvas(frame_a, width=self.width, height=self.height)
+		self.canvas = tk.Canvas(frame_a, width=w, height=h)
 		self.canvas.pack()
 
+		v = tk.IntVar(name = "K")
+		self.make_slider( frame_b, label ="K", var = v, interval = (1, 30, 1))
 
-		var = tk.DoubleVar()
-		slider1 = tk.Scale( frame_b, variable = var, orient = tk.HORIZONTAL, length = 200, command = self.Slider1Moved )
-		slider1.pack(anchor=tk.CENTER)
+		v = tk.IntVar(name = "K2")
+		self.make_slider( frame_b, label ="K2", var = v, interval = (1, 30, 1))
 
-		var2= tk.DoubleVar()
-		slider2 = tk.Scale( frame_b, variable = var2, orient = tk.HORIZONTAL, length =200, command = self.Slider2Moved )
-		slider2.pack(anchor=tk.CENTER)
+		v = tk.IntVar(name = "M")
+		self.make_slider( frame_b, label ="Number of lines", var = v, interval = (100, 10000, 100))
+
+		v = tk.DoubleVar(name = "Shift")
+		self.make_slider( frame_b, label ="shift slider", var = v, interval = (0.01, 1.0, 0.01))
+
+		v = tk.DoubleVar(name = "Time")
+		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 20.0, 0.01))
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
@@ -43,20 +69,36 @@ class SpiroView:
 		
 		tk.Button(frame_b, text = " start ",  command = self.start).pack(side="top")
 		tk.Button(frame_b, text = " stop ",  command = self.stop).pack(side="top")
+		tk.Button(frame_b, text = " plus ",  command = self.plus).pack(side="top")
 		#self.GeneratePalette()
 		#self.draw_init()
+		
+		self.RenderVar = tk.IntVar()
+		self.RenderVar.set(0)
+		tk.Radiobutton(frame_b, text="IggDraw", variable=self.RenderVar, value = 0, command=lambda : self.update()).pack(side="top")
+		tk.Radiobutton(frame_b, text="Cairo", variable=self.RenderVar, value = 1, command=lambda : self.update()).pack(side="top")
+
 		frame_a.pack(side="left")
 		frame_b.pack(side="left")
-		self.spiro = Spiro(self.width,self.height)  
+		self.spiro = Spiro(self.Parameters)  
 		self.draw(0)
+
+	def update(self):
+		t = self.ani_count/400
+		self.draw(t)
 
 
 	def draw(self,t):
-		pim = self.spiro.RenderCairo(t)
+		print(self.RenderVar.get())
+		if self.RenderVar.get() == 0:
+			pim = self.spiro.RenderMap(t)
+		else:	
+			pim = self.spiro.RenderCairo(t)
 		self.FPS()
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
 		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
+
 
 	def SaveImage(self, pim):
 		if self.saveFlag.get():
@@ -82,11 +124,11 @@ class SpiroView:
 		
 
 	def animate(self):
-		t = self.ani_count/200
-		self.draw(t)
+		t = self.ani_count/400
+		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 		self.ani_count = self.ani_count + 1
-		if not self.stop_flag and (self.ani_count<4000):
+		if not self.stop_flag and (self.ani_count<8000):
 			self.canvas.after(10, self.animate) 
 
 	def start(self):
@@ -94,25 +136,29 @@ class SpiroView:
 		self.ani_count = 0
 		self.animate()
 
+	def plus(self):
+		self.stop_flag = False
+		self.ani_count += 1
+		t = self.ani_count/400
+		self.draw(t)
+		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
+
 	def stop(self):
 		self.stop_flag = True
 
-	def Slider1Moved(self, v):
-		print("s1 =" ,  v)
-		t = int(v)/100.0
-		self.start_time = t
-		self.DrawEx(t, self.phi)
-		self.label_a["text"] = "t = " + "{:5.3f}".format(t)	
 
-	phi = 0
+	def Slider1Moved(self, v):
+		#self.Parameters["Time"] = int(v)/100.0
+		self.DrawEx()
+		#self.label_a["text"] = "t = " + "{:5.3f}".format(self.Parameters["Time"])	
+
 	def Slider2Moved(self, v):
-		#print(v)
-		self.phi =  int(v)/150.0
-		self.DrawEx( self.start_time, self.phi)
-		self.label_a["text"] = "t = " + "{:5.3f}".format(self.start_time)	
+		#self.Parameters["Shift"] = int(v)/150.0
+		self.DrawEx()
+		#self.label_a["text"] = "t = " + "{:5.3f}".format(self.Parameters["Time"])	
 	
-	def DrawEx(self, t, phi):
-		pim = self.spiro.Render2(t, phi)
+	def DrawEx(self):
+		pim = self.spiro.Render2(self.Vars)
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
 		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
