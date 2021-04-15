@@ -18,7 +18,7 @@ class SpiroView:
 
 	def UpdateVar(self, var):
 		print(var + " = {}".format(self.Vars[var].get()))
-		self.DrawEx()
+		self.Draw()
 
 	def make_slider(self, parent, var, interval, label, cmd = None):
 		#var = tk.DoubleVar(name = VarName)
@@ -73,7 +73,8 @@ class SpiroView:
 		#self.GeneratePalette()
 		#self.draw_init()
 		
-		self.RenderVar = tk.IntVar()
+		self.RenderVar = tk.IntVar(name = "RenderType")
+		self.Vars[self.RenderVar._name] = self.RenderVar
 		self.RenderVar.set(0)
 		tk.Radiobutton(frame_b, text="IggDraw", variable=self.RenderVar, value = 0, command=lambda : self.update()).pack(side="top")
 		tk.Radiobutton(frame_b, text="Cairo", variable=self.RenderVar, value = 1, command=lambda : self.update()).pack(side="top")
@@ -81,20 +82,15 @@ class SpiroView:
 		frame_a.pack(side="left")
 		frame_b.pack(side="left")
 		self.spiro = Spiro(self.Parameters)  
-		self.draw(0)
+		self.Draw()
 
 	def update(self):
 		t = self.ani_count/400
-		self.draw(t)
+		#self.draw(t)
 
 
-	def draw(self,t):
-		print(self.RenderVar.get())
-		if self.RenderVar.get() == 0:
-			pim = self.spiro.RenderMap(t)
-		else:	
-			pim = self.spiro.RenderCairo(t)
-		self.FPS()
+	def Draw(self):
+		pim = self.spiro.Render2(self.Vars)
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
 		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
@@ -124,10 +120,11 @@ class SpiroView:
 		
 
 	def animate(self):
+		self.FPS()
 		t = self.ani_count/400
 		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
-		self.ani_count = self.ani_count + 1
+		self.ani_count +=  1
 		if not self.stop_flag and (self.ani_count<8000):
 			self.canvas.after(10, self.animate) 
 
@@ -157,8 +154,3 @@ class SpiroView:
 		self.DrawEx()
 		#self.label_a["text"] = "t = " + "{:5.3f}".format(self.Parameters["Time"])	
 	
-	def DrawEx(self):
-		pim = self.spiro.Render2(self.Vars)
-		self.SaveImage(pim)
-		self.photo = ImageTk.PhotoImage(pim)
-		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
