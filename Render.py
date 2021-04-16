@@ -83,18 +83,22 @@ class Spiro:
 		return pim
 
 	def Render2(self, vars):
+		renderType = vars["RenderType"].get()
 		t = 1.5*vars["Time"].get()
 		shift = math.pi * vars["Shift"].get()
-		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 255))
-		self.drw = aggdraw.Draw(pim)
-		self.drw.setantialias(True)
 		M = vars["M"].get()
 		K = vars["K"].get()
 		K2 = vars["K2"].get()
+		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 255))
+		self.drw = aggdraw.Draw(pim)
+		self.drw.setantialias(True)
+
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z, t, K, K2), self.FF(z + shift, t, K, K2)] for z in Z)
-		a = math.log(25000/M)
-		self.draw_lines(lines, alpha = int(a*20), thickness= a/3) 
+		a = 1 - (M-100)/10000
+		#a = a*a
+		print(a)
+		self.draw_lines(lines, alpha = int(a*255), thickness= 1.5*a+0.9) 
 		self.drw.flush()
 		return pim
 
