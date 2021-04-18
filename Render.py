@@ -97,8 +97,7 @@ class Spiro:
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = ([self.FF(z, t, K, K1, K2), self.FF(z + shift, t, K, K1, K2)] for z in Z)
 		a =math.exp(0.6*math.log(100/M))
-		#a = a*a
-		print(a)
+		#print(a)
 		self.draw_lines(lines, alpha = int(a*255), thickness= 1.0*a+0.4) 
 		self.drw.flush()
 		return pim
@@ -110,8 +109,8 @@ class Spiro:
 		a =  0.5 #*sin(2*pi*t)
 		b = 3/4#*cos(pi*t)
 		c = 1/4
-		x = cos(k*z) + a*cos(k1*z ) + b*cos(k2*z +7*pi*t) 
-		y = sin(k*z) + a*sin(k1*z ) + b*sin(k2*z +7*pi*t) 
+		x = cos(k*z) + a*cos(k1*z) + b*cos(k2*z +8*pi*t) 
+		y = sin(k*z) + a*sin(k1*z) + b*sin(k2*z +8*pi*t) 
 		r = 0.4
 		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
 
