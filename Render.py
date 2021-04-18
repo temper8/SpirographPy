@@ -84,29 +84,30 @@ class Spiro:
 
 	def Render2(self, vars):
 		renderType = vars["RenderType"].get()
-		t = 1.5*vars["Time"].get()
+		t = 1.0*vars["Time"].get()
 		shift = math.pi * vars["Shift"].get()
 		M = vars["M"].get()
 		K = vars["K"].get()
+		K1 = vars["K1"].get()
 		K2 = vars["K2"].get()
 		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 255))
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
 
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
-		lines = ([self.FF(z, t, K, K2), self.FF(z + shift, t, K, K2)] for z in Z)
-		a = 1 - (M-100)/10000
+		lines = ([self.FF(z, t, K, K1, K2), self.FF(z + shift, t, K, K1, K2)] for z in Z)
+		a =math.exp(0.6*math.log(100/M))
 		#a = a*a
 		print(a)
-		self.draw_lines(lines, alpha = int(a*255), thickness= 1.5*a+0.9) 
+		self.draw_lines(lines, alpha = int(a*255), thickness= 1.0*a+0.4) 
 		self.drw.flush()
 		return pim
 
-	def FF(self, z, t, k = 3, k2 = 17):
-		k1 =  math.trunc(2*t) -7
+	def FF(self, z, t, k = 3, k1 = -5, k2 = 17):
+		#k1 =  math.trunc(2*t) -7
 		k3 = 8
 		l = 0.5
-		a =  0.5*sin(2*pi*t)
+		a =  0.5 #*sin(2*pi*t)
 		b = 3/4#*cos(pi*t)
 		c = 1/4
 		x = cos(k*z) + a*cos(k1*z ) + b*cos(k2*z +7*pi*t) 
@@ -302,7 +303,7 @@ class Spiro:
 
 	def draw_lines(self, lines, alpha = 10, thickness = 0.5) :	
 		print(alpha, thickness)
-		pen = aggdraw.Pen("blue", 0.5, alpha)
+		pen = aggdraw.Pen("blue", thickness, alpha)
 		#pen = self.GetPen()
 		for l in lines:
 			self.drw.line((l[0][0], l[0][1], l[1][0], l[1][1]), pen)

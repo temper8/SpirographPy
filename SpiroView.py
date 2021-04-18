@@ -42,6 +42,9 @@ class SpiroView:
 		v = tk.IntVar(name = "K")
 		self.make_slider( frame_b, label ="K", var = v, interval = (1, 30, 1))
 
+		v = tk.IntVar(name = "K1")
+		self.make_slider( frame_b, label ="K1", var = v, interval = (-20, 20, 1))
+
 		v = tk.IntVar(name = "K2")
 		self.make_slider( frame_b, label ="K2", var = v, interval = (1, 30, 1))
 
@@ -52,7 +55,7 @@ class SpiroView:
 		self.make_slider( frame_b, label ="shift slider", var = v, interval = (0.01, 1.0, 0.01))
 
 		v = tk.DoubleVar(name = "Time")
-		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 20.0, 0.01))
+		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 1.0, 0.01))
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
