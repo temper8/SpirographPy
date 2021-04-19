@@ -128,11 +128,11 @@ class SpiroView:
 
 	def animate(self):
 		self.FPS()
-		t = self.ani_count/400
+		t = self.ani_count/1000
 		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 		self.ani_count +=  1
-		if not self.stop_flag and (self.ani_count<8000):
+		if not self.stop_flag and (self.ani_count<1000):
 			self.canvas.after(10, self.animate) 
 
 	def start(self):
