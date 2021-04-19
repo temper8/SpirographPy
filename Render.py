@@ -111,12 +111,25 @@ class Spiro:
 	def FF(self, z, t, k = 3, k1 = -5, k2 = 17):
 		#k1 =  math.trunc(2*t) -7
 		l =  0.5
-		a =  0.5*sin(2*pi*t)
-		b =  0.5*cos(2*pi*t)
-		x = cos(k*z) + a*cos(k1*z+2*pi*t) + b*cos(k2*z-2*pi*t) 
-		y = sin(k*z) + a*sin(k1*z+2*pi*t) + b*sin(k2*z-2*pi*t) 
-		r = 0.4
+		a =  0.25*sin(2*pi*t)
+		b =  0.25*cos(2*pi*t)
+		u = 0.7*cos(k*z) + a*cos(k1*z+2*pi*t) + b*cos(k2*z-2*pi*t) 
+		v = 0.7*sin(k*z) + a*sin(k1*z+2*pi*t) + b*sin(k2*z-2*pi*t) 
+		r = 1.0
+		(x,y) = self.DiskToSqareMapping(u,v)
 		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
+
+	def DiskToSqareMapping(self, u, v):
+		#print(u,v)
+		c2 = 2*math.sqrt(2)
+		a1 = 2 + u*u - v*v + c2*u
+		a2 = 2 + u*u - v*v - c2*u
+		b1 = 2 - u*u + v*v + c2*v
+		b2 = 2 - u*u + v*v - c2*v
+		#print(b1,b2)
+		x = (math.sqrt(a1) - math.sqrt(a2))/2
+		y = (math.sqrt(b1) - math.sqrt(b2))/2
+		return (x,y)
 
 	def draw_path(self, lines, alpha = 10, thickness = 0.5, color = "blue"):
 		pf = lines[-1]
