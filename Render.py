@@ -103,7 +103,7 @@ class Spiro:
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
 		lines = list([self.FF(z, t, K, K1, K2), self.FF(z + shift, t, K, K1, K2), self.GetColor(z)] for z in Z)
 		a = math.exp(0.6*math.log(100/M))
-		self.draw_lines(lines, alpha = int(a*255), thickness= 1.0*a+0.4) 
+		self.draw_lines(lines, alpha = int(a*255), thickness= 1.0*a+0.7) 
 		#self.draw_path(lines, alpha = 200, thickness= 0.5) 
 		self.drw.flush()
 		return pim
@@ -111,12 +111,12 @@ class Spiro:
 	def FF(self, z, t, k = 3, k1 = -5, k2 = 17):
 		#k1 =  math.trunc(2*t) -7
 		l =  0.5
-		a =  0.25*sin(2*pi*t)
-		b =  0.25*cos(2*pi*t)
-		u = 0.7*cos(k*z) + a*cos(k1*z+2*pi*t) + b*cos(k2*z-2*pi*t) 
-		v = 0.7*sin(k*z) + a*sin(k1*z+2*pi*t) + b*sin(k2*z-2*pi*t) 
+		a =  0.4*sin(2*pi*t)
+		b =  0.4*cos(2*pi*t)
+		u = 0.4*cos(k*z) + a*cos(k1*z+2*pi*t) + b*cos(k2*z-2*pi*t) 
+		v = 0.4*sin(k*z) + a*sin(k1*z+2*pi*t) + b*sin(k2*z-2*pi*t) 
 		r = 1.0
-		(x,y) = self.DiskToSqareMapping(u,v)
+		(x,y) = (u,v) #self.DiskToSqareMapping(u,v)
 		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
 
 	def DiskToSqareMapping(self, u, v):
@@ -139,8 +139,9 @@ class Spiro:
 			pf = l
 
 	def draw_lines(self, lines, alpha = 10, thickness = 0.5, color = "blue" ) :	
+		pen = aggdraw.Pen("blue", thickness, alpha)
 		for l in lines:
-			pen = aggdraw.Pen(l[2], thickness, alpha)
+			#pen = aggdraw.Pen(l[2], thickness, alpha)
 			self.drw.line((l[0][0], l[0][1], l[1][0], l[1][1]), pen)
 
 
