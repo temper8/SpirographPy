@@ -49,7 +49,7 @@ class SpiroView:
 		self.make_slider( frame_b, label ="K2", var = v, interval = (1, 30, 1))
 
 		v = tk.IntVar(name = "M")
-		self.make_slider( frame_b, label ="Number of lines", var = v, interval = (100, 10000, 100))
+		self.make_slider( frame_b, label ="Number of lines", var = v, interval = (50, 10000, 10))
 
 		v = tk.DoubleVar(name = "Shift")
 		self.make_slider( frame_b, label ="shift slider", var = v, interval = (0.01, 1.0, 0.01))
@@ -73,6 +73,7 @@ class SpiroView:
 		tk.Button(frame_b, text = " start ",  command = self.start).pack(side="top")
 		tk.Button(frame_b, text = " stop ",  command = self.stop).pack(side="top")
 		tk.Button(frame_b, text = " plus ",  command = self.plus).pack(side="top")
+		tk.Button(frame_b, text = " Color palette ",  command = self.UpdatePalette).pack(side="top")
 		#self.GeneratePalette()
 		#self.draw_init()
 		
@@ -91,6 +92,9 @@ class SpiroView:
 		t = self.ani_count/400
 		#self.draw(t)
 
+	def UpdatePalette(self):
+		self.spiro.GeneratePalette()
+		self.Draw()
 
 	def Draw(self):
 		pim = self.spiro.Render2(self.Vars)

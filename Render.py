@@ -14,17 +14,23 @@ from shapely.geometry import LineString
 
 class Spiro:
 
-	COLORS_NUMBER = 512
+	COLORS_NUMBER = 4
 	Pens = []
 	Colors = []
 
 	def GeneratePalette(self):
 		bi = 64.0/256
+		self.Colors = []
 		for i in range(0, self.COLORS_NUMBER):
 			alpha = 30
-			r = int((random.random()*(1.0 - bi) + bi) * 256)
-			g = int((random.random()*(1.0 - bi) + bi)*256)
-			b = int((random.random()*(1.0 - bi) + bi)*256)
+			r = (random.random()*(1.0 - bi) + bi)
+			g = (random.random()*(1.0 - bi) + bi)
+			b = (random.random()*(1.0 - bi) + bi)
+			m = 1 #max([r,g,b])
+			print(m)
+			r = int(r/m*256)
+			g = int(g/m*256)
+			b = int(b/m*256)
 			# print(r,g,b)
 			self.Colors.append((r, g, b))
 			self.Pens.append(aggdraw.Pen((r, g, b), 0.5, alpha))
@@ -95,40 +101,34 @@ class Spiro:
 		self.drw.setantialias(True)
 
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
-		lines = ([self.FF(z, t, K, K1, K2), self.FF(z + shift, t, K, K1, K2)] for z in Z)
-		a =math.exp(0.6*math.log(100/M))
-		#print(a)
+		lines = list([self.FF(z, t, K, K1, K2), self.FF(z + shift, t, K, K1, K2), self.GetColor(z)] for z in Z)
+		a = math.exp(0.6*math.log(100/M))
 		self.draw_lines(lines, alpha = int(a*255), thickness= 1.0*a+0.4) 
+		#self.draw_path(lines, alpha = 200, thickness= 0.5) 
 		self.drw.flush()
 		return pim
 
 	def FF(self, z, t, k = 3, k1 = -5, k2 = 17):
 		#k1 =  math.trunc(2*t) -7
-		k3 = 8
-		l = 0.5
-		a =  0.5 #*sin(2*pi*t)
-		b = 3/4#*cos(pi*t)
-		c = 1/4
-		x = cos(k*z) + a*cos(k1*z) + b*cos(k2*z +8*pi*t) 
-		y = sin(k*z) + a*sin(k1*z) + b*sin(k2*z +8*pi*t) 
+		l =  0.5
+		a =  0.5*sin(2*pi*t)
+		b =  0.5*cos(2*pi*t)
+		x = cos(k*z) + a*cos(k1*z+2*pi*t) + b*cos(k2*z-2*pi*t) 
+		y = sin(k*z) + a*sin(k1*z+2*pi*t) + b*sin(k2*z-2*pi*t) 
 		r = 0.4
 		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
 
-	def Circle(self, z, t):
-		k = 1
-		x = cos(k*z)
-		y = sin(k*z)
-		r = 0.3#*math.fabs(sin(2*pi*t))
-		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
+	def draw_path(self, lines, alpha = 10, thickness = 0.5, color = "blue"):
+		pf = lines[-1]
+		for l in lines:
+			pen = aggdraw.Pen(l[2], thickness, alpha)
+			self.drw.line((pf[0][0], pf[0][1], l[0][0], l[0][1]), pen)
+			pf = l
 
-	def Rect(self, z, t):
-		k = 1
-		x = z
-		if z<0 : x = 1-z
-		x = x - 2.0
-		y = math.fabs(z) - 2.0
-		r = 0.3
-		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
+	def draw_lines(self, lines, alpha = 10, thickness = 0.5, color = "blue" ) :	
+		for l in lines:
+			pen = aggdraw.Pen(l[2], thickness, alpha)
+			self.drw.line((l[0][0], l[0][1], l[1][0], l[1][1]), pen)
 
 
 	def draw_line(self,xy0, xy1):	
@@ -137,10 +137,13 @@ class Spiro:
 		dot = aggdraw.Pen("blue", 1.0, 100)
 		self.drw.line((xy0[0], xy0[1], xy0[0]+1, xy0[1]+1),dot)
 
+	def GetColor(self, z):
+		x = (self.COLORS_NUMBER) * z / (2*math.pi)
+		return self.avg_clr(int(x), x - int(x))
 
 	def avg_clr(self, i, d):
 		c1 = self.Colors[i]
-		c2=  self.Colors[i+1]
+		c2=  self.Colors[(i+1)%self.COLORS_NUMBER]
 		r = int(c1[0]*(1-d) + c2[0]*d)
 		g = int(c1[1]*(1-d) + c2[1]*d)
 		b = int(c1[2]*(1-d) + c2[2]*d)
@@ -300,14 +303,6 @@ class Spiro:
 		self.context.fill()			
 
 
-	def draw_lines(self, lines, alpha = 10, thickness = 0.5) :	
-		print(alpha, thickness)
-		pen = aggdraw.Pen("blue", thickness, alpha)
-		#pen = self.GetPen()
-		for l in lines:
-			self.drw.line((l[0][0], l[0][1], l[1][0], l[1][1]), pen)
-			#dot = aggdraw.Pen("blue", 1.0, 100)
-			#self.drw.line((xy0[0], xy0[1], xy0[0]+1, xy0[1]+1),dot)
 
 	def draw_polygons(self,lines):	
 		pen = aggdraw.Pen("red",0.5, 0)
