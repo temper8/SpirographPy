@@ -96,7 +96,7 @@ class Spiro:
 		K = vars["K"].get()
 		K1 = vars["K1"].get()
 		K2 = vars["K2"].get()
-		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 255))
+		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 64, 255))
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
 
