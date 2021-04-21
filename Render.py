@@ -4,13 +4,9 @@ import aggdraw
 import random
 import timeit
 import time
-import cairo
 
 from PIL import Image, ImageDraw, ImageTk
-
 from math import sin, cos, pi
-
-
 
 
 def Spirograph(parameters, vars):
