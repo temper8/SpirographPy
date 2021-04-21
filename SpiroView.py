@@ -4,6 +4,8 @@ import aggdraw
 import random
 import timeit
 
+import Render
+
 from PIL import Image, ImageDraw, ImageTk
 from math import sin, cos, pi
 from Render import Spiro
@@ -97,7 +99,9 @@ class SpiroView:
 		self.Draw()
 
 	def Draw(self):
-		pim = self.spiro.Render2(self.Vars)
+		#pim = self.spiro.Render2(self.Vars)
+		pim = Render.Spirograph(self.Parameters, self.Vars)
+		Render
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
 		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
