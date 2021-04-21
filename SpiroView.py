@@ -8,7 +8,7 @@ import Render
 
 from PIL import Image, ImageDraw, ImageTk
 from math import sin, cos, pi
-from Render import Spiro
+
 def my_callback(var, indx, mode):
 	print(var)
 	#print("Traced variable {}".format(var.get()))
@@ -87,7 +87,6 @@ class SpiroView:
 
 		frame_a.pack(side="left")
 		frame_b.pack(side="left")
-		self.spiro = Spiro(self.Parameters)  
 		self.Draw()
 
 	def update(self):
@@ -95,11 +94,10 @@ class SpiroView:
 		#self.draw(t)
 
 	def UpdatePalette(self):
-		self.spiro.GeneratePalette()
+		#self.spiro.GeneratePalette()
 		self.Draw()
 
 	def Draw(self):
-		#pim = self.spiro.Render2(self.Vars)
 		pim = Render.Spirograph(self.Parameters, self.Vars)
 		Render
 		self.SaveImage(pim)
