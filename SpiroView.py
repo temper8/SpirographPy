@@ -75,15 +75,13 @@ class SpiroView:
 		tk.Button(frame_b, text = " start ",  command = self.start).pack(side="top")
 		tk.Button(frame_b, text = " stop ",  command = self.stop).pack(side="top")
 		tk.Button(frame_b, text = " plus ",  command = self.plus).pack(side="top")
-		tk.Button(frame_b, text = " Color palette ",  command = self.UpdatePalette).pack(side="top")
-		#self.GeneratePalette()
-		#self.draw_init()
+		#tk.Button(frame_b, text = " Color palette ",  command = self.UpdatePalette).pack(side="top")
 		
 		self.RenderVar = tk.IntVar(name = "RenderType")
 		self.Vars[self.RenderVar._name] = self.RenderVar
 		self.RenderVar.set(0)
 		tk.Radiobutton(frame_b, text="IggDraw", variable=self.RenderVar, value = 0, command=lambda : self.update()).pack(side="top")
-		tk.Radiobutton(frame_b, text="Cairo", variable=self.RenderVar, value = 1, command=lambda : self.update()).pack(side="top")
+		#tk.Radiobutton(frame_b, text="Cairo", variable=self.RenderVar, value = 1, command=lambda : self.update()).pack(side="top")
 
 		frame_a.pack(side="left")
 		frame_b.pack(side="left")
