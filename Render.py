@@ -12,19 +12,85 @@ from math import sin, cos, pi
 from shapely.geometry import LineString
 
 
+
+def Spirograph(parameters, vars):
+	w = parameters["Width"]
+	h = parameters["Height"]
+	r = parameters["Radius"]
+	renderType = vars["RenderType"].get()
+	t = vars["Time"].get()
+	shift = math.pi * vars["Shift"].get()
+	M = vars["M"].get()
+	K = vars["K"].get()
+	K1 = vars["K1"].get()
+	K2 = vars["K2"].get()
+	pim = Image.new('RGBA', (w, h), (0, 0, 64, 255))
+	drw = aggdraw.Draw(pim)
+	drw.setantialias(True)
+	Z = (2*math.pi*i/M for i in range(0, int(M)))
+	lines = ([FF(z, t, K, K1, K2), FF(z + shift, t, K, K1, K2), "blue"] for z in Z)
+	lines = ([Fit(w,h,r,li[0]), Fit(w,h,r,li[1]), li[2]] for li in lines)
+
+	a = math.exp(0.6*math.log(100/M))
+	alpha = int(a*255)
+	thickness= 1.0*a + 0.7
+	pen = aggdraw.Pen("blue", thickness, alpha)
+	for li in lines:
+		#pen = aggdraw.Pen(l[2], thickness, alpha)
+		drw.line((li[0][0], li[0][1], li[1][0], li[1][1]), pen)
+	
+	drw.flush()
+	return pim
+
+def Fit(w, h, r, xy):
+	return (w/2 + r*xy[0], h/2 + r*xy[1])	
+
+def FF(z, t, k = 3, k1 = -5, k2 = 17):
+	l =  0.5
+	a =  0.4*sin(2*pi*t)
+	b =  0.4*cos(2*pi*t)
+	u = 0.4*cos(k*z) + a*cos(k1*z+2*pi*t) + b*cos(k2*z-2*pi*t) 
+	v = 0.4*sin(k*z) + a*sin(k1*z+2*pi*t) + b*sin(k2*z-2*pi*t) 
+	#(x,y) = (u,v)
+	return (u,v)
+
+def GeneratePalette(COLORS_NUMBER):
+	bi = 64.0/256
+	Colors = []
+	for i in range(0, COLORS_NUMBER):
+		alpha = 30
+		r = (random.random()*(1.0 - bi) + bi)
+		g = (random.random()*(1.0 - bi) + bi)
+		b = (random.random()*(1.0 - bi) + bi)
+		m = 1 #max([r,g,b])
+		#print(m)
+		r = int(r/m*256)
+		g = int(g/m*256)
+		b = int(b/m*256)
+		# print(r,g,b)
+		Colors.append((r, g, b))
+	return Colors		
+
+
 class Spiro:
 
-	COLORS_NUMBER = 512
+	COLORS_NUMBER = 4
 	Pens = []
 	Colors = []
 
 	def GeneratePalette(self):
 		bi = 64.0/256
+		self.Colors = []
 		for i in range(0, self.COLORS_NUMBER):
 			alpha = 30
-			r = int((random.random()*(1.0 - bi) + bi) * 256)
-			g = int((random.random()*(1.0 - bi) + bi)*256)
-			b = int((random.random()*(1.0 - bi) + bi)*256)
+			r = (random.random()*(1.0 - bi) + bi)
+			g = (random.random()*(1.0 - bi) + bi)
+			b = (random.random()*(1.0 - bi) + bi)
+			m = 1 #max([r,g,b])
+			print(m)
+			r = int(r/m*256)
+			g = int(g/m*256)
+			b = int(b/m*256)
 			# print(r,g,b)
 			self.Colors.append((r, g, b))
 			self.Pens.append(aggdraw.Pen((r, g, b), 0.5, alpha))
@@ -84,51 +150,59 @@ class Spiro:
 
 	def Render2(self, vars):
 		renderType = vars["RenderType"].get()
-		t = 1.5*vars["Time"].get()
+		t = 1.0*vars["Time"].get()
 		shift = math.pi * vars["Shift"].get()
 		M = vars["M"].get()
 		K = vars["K"].get()
+		K1 = vars["K1"].get()
 		K2 = vars["K2"].get()
-		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 255))
+		pim = Image.new('RGBA', (self.width, self.height), (0, 0, 64, 255))
 		self.drw = aggdraw.Draw(pim)
 		self.drw.setantialias(True)
 
 		Z = (2*math.pi*i/M for i in range(0, int(M)))
-		lines = ([self.FF(z, t, K, K2), self.FF(z + shift, t, K, K2)] for z in Z)
-		a = 1 - (M-100)/10000
-		#a = a*a
-		print(a)
-		self.draw_lines(lines, alpha = int(a*255), thickness= 1.5*a+0.9) 
+		lines = list([self.FF(z, t, K, K1, K2), self.FF(z + shift, t, K, K1, K2), self.GetColor(z)] for z in Z)
+		a = math.exp(0.6*math.log(100/M))
+		self.draw_lines(lines, alpha = int(a*255), thickness= 1.0*a+0.7) 
+		#self.draw_path(lines, alpha = 200, thickness= 0.5) 
 		self.drw.flush()
 		return pim
 
-	def FF(self, z, t, k = 3, k2 = 17):
-		k1 =  math.trunc(2*t) -7
-		k3 = 8
-		l = 0.5
-		a =  0.5*sin(2*pi*t)
-		b = 3/4#*cos(pi*t)
-		c = 1/4
-		x = cos(k*z) + a*cos(k1*z ) + b*cos(k2*z +7*pi*t) 
-		y = sin(k*z) + a*sin(k1*z ) + b*sin(k2*z +7*pi*t) 
-		r = 0.4
+	def FF(self, z, t, k = 3, k1 = -5, k2 = 17):
+		#k1 =  math.trunc(2*t) -7
+		l =  0.5
+		a =  0.4*sin(2*pi*t)
+		b =  0.4*cos(2*pi*t)
+		u = 0.4*cos(k*z) + a*cos(k1*z+2*pi*t) + b*cos(k2*z-2*pi*t) 
+		v = 0.4*sin(k*z) + a*sin(k1*z+2*pi*t) + b*sin(k2*z-2*pi*t) 
+		r = 1.0
+		(x,y) = (u,v) #self.DiskToSqareMapping(u,v)
 		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
 
-	def Circle(self, z, t):
-		k = 1
-		x = cos(k*z)
-		y = sin(k*z)
-		r = 0.3#*math.fabs(sin(2*pi*t))
-		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
+	def DiskToSqareMapping(self, u, v):
+		#print(u,v)
+		c2 = 2*math.sqrt(2)
+		a1 = 2 + u*u - v*v + c2*u
+		a2 = 2 + u*u - v*v - c2*u
+		b1 = 2 - u*u + v*v + c2*v
+		b2 = 2 - u*u + v*v - c2*v
+		#print(b1,b2)
+		x = (math.sqrt(a1) - math.sqrt(a2))/2
+		y = (math.sqrt(b1) - math.sqrt(b2))/2
+		return (x,y)
 
-	def Rect(self, z, t):
-		k = 1
-		x = z
-		if z<0 : x = 1-z
-		x = x - 2.0
-		y = math.fabs(z) - 2.0
-		r = 0.3
-		return (self.width/2 + r*self.radius*x, self.height/2 + r*self.radius*y)	
+	def draw_path(self, lines, alpha = 10, thickness = 0.5, color = "blue"):
+		pf = lines[-1]
+		for l in lines:
+			pen = aggdraw.Pen(l[2], thickness, alpha)
+			self.drw.line((pf[0][0], pf[0][1], l[0][0], l[0][1]), pen)
+			pf = l
+
+	def draw_lines(self, lines, alpha = 10, thickness = 0.5, color = "blue" ) :	
+		pen = aggdraw.Pen("blue", thickness, alpha)
+		for l in lines:
+			#pen = aggdraw.Pen(l[2], thickness, alpha)
+			self.drw.line((l[0][0], l[0][1], l[1][0], l[1][1]), pen)
 
 
 	def draw_line(self,xy0, xy1):	
@@ -137,10 +211,13 @@ class Spiro:
 		dot = aggdraw.Pen("blue", 1.0, 100)
 		self.drw.line((xy0[0], xy0[1], xy0[0]+1, xy0[1]+1),dot)
 
+	def GetColor(self, z):
+		x = (self.COLORS_NUMBER) * z / (2*math.pi)
+		return self.avg_clr(int(x), x - int(x))
 
 	def avg_clr(self, i, d):
 		c1 = self.Colors[i]
-		c2=  self.Colors[i+1]
+		c2=  self.Colors[(i+1)%self.COLORS_NUMBER]
 		r = int(c1[0]*(1-d) + c2[0]*d)
 		g = int(c1[1]*(1-d) + c2[1]*d)
 		b = int(c1[2]*(1-d) + c2[2]*d)
@@ -300,14 +377,6 @@ class Spiro:
 		self.context.fill()			
 
 
-	def draw_lines(self, lines, alpha = 10, thickness = 0.5) :	
-		print(alpha, thickness)
-		pen = aggdraw.Pen("blue", 0.5, alpha)
-		#pen = self.GetPen()
-		for l in lines:
-			self.drw.line((l[0][0], l[0][1], l[1][0], l[1][1]), pen)
-			#dot = aggdraw.Pen("blue", 1.0, 100)
-			#self.drw.line((xy0[0], xy0[1], xy0[0]+1, xy0[1]+1),dot)
 
 	def draw_polygons(self,lines):	
 		pen = aggdraw.Pen("red",0.5, 0)

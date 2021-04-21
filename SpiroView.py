@@ -4,6 +4,8 @@ import aggdraw
 import random
 import timeit
 
+import Render
+
 from PIL import Image, ImageDraw, ImageTk
 from math import sin, cos, pi
 from Render import Spiro
@@ -42,17 +44,20 @@ class SpiroView:
 		v = tk.IntVar(name = "K")
 		self.make_slider( frame_b, label ="K", var = v, interval = (1, 30, 1))
 
+		v = tk.IntVar(name = "K1")
+		self.make_slider( frame_b, label ="K1", var = v, interval = (-20, 20, 1))
+
 		v = tk.IntVar(name = "K2")
 		self.make_slider( frame_b, label ="K2", var = v, interval = (1, 30, 1))
 
 		v = tk.IntVar(name = "M")
-		self.make_slider( frame_b, label ="Number of lines", var = v, interval = (100, 10000, 100))
+		self.make_slider( frame_b, label ="Number of lines", var = v, interval = (50, 10000, 10))
 
 		v = tk.DoubleVar(name = "Shift")
 		self.make_slider( frame_b, label ="shift slider", var = v, interval = (0.01, 1.0, 0.01))
 
 		v = tk.DoubleVar(name = "Time")
-		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 20.0, 0.01))
+		self.make_slider( frame_b, label ="time slider", var = v, interval = (0.0, 1.0, 0.01))
 
 		self.saveFlag = tk.BooleanVar()
 		self.saveFlag.set(0)
@@ -70,6 +75,7 @@ class SpiroView:
 		tk.Button(frame_b, text = " start ",  command = self.start).pack(side="top")
 		tk.Button(frame_b, text = " stop ",  command = self.stop).pack(side="top")
 		tk.Button(frame_b, text = " plus ",  command = self.plus).pack(side="top")
+		tk.Button(frame_b, text = " Color palette ",  command = self.UpdatePalette).pack(side="top")
 		#self.GeneratePalette()
 		#self.draw_init()
 		
@@ -88,9 +94,14 @@ class SpiroView:
 		t = self.ani_count/400
 		#self.draw(t)
 
+	def UpdatePalette(self):
+		self.spiro.GeneratePalette()
+		self.Draw()
 
 	def Draw(self):
-		pim = self.spiro.Render2(self.Vars)
+		#pim = self.spiro.Render2(self.Vars)
+		pim = Render.Spirograph(self.Parameters, self.Vars)
+		Render
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
 		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
@@ -121,11 +132,11 @@ class SpiroView:
 
 	def animate(self):
 		self.FPS()
-		t = self.ani_count/400
+		t = self.ani_count/1000
 		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 		self.ani_count +=  1
-		if not self.stop_flag and (self.ani_count<8000):
+		if not self.stop_flag and (self.ani_count<1000):
 			self.canvas.after(10, self.animate) 
 
 	def start(self):
