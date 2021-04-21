@@ -144,22 +144,9 @@ class SpiroView:
 
 	def plus(self):
 		self.stop_flag = False
-		self.ani_count += 1
-		t = self.ani_count/400
-		self.draw(t)
+		t = self.Vars["Time"].get() + 0.01
+		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 
 	def stop(self):
 		self.stop_flag = True
-
-
-	def Slider1Moved(self, v):
-		#self.Parameters["Time"] = int(v)/100.0
-		self.DrawEx()
-		#self.label_a["text"] = "t = " + "{:5.3f}".format(self.Parameters["Time"])	
-
-	def Slider2Moved(self, v):
-		#self.Parameters["Shift"] = int(v)/150.0
-		self.DrawEx()
-		#self.label_a["text"] = "t = " + "{:5.3f}".format(self.Parameters["Time"])	
-	
