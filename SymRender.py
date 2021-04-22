@@ -23,7 +23,7 @@ def SymmetryWall(parameters, vars):
 	K = vars["K"].get()
 	K1 = vars["K1"].get()
 	K2 = vars["K2"].get()
-	pim = Image.new('RGBA', (w, h), (0, 0, 64, 255))
+	pim = Image.new('RGBA', (w, h), (0, 0, 0, 255))
 	#drw = aggdraw.Draw(pim)
 	#drw.setantialias(True)
 
@@ -31,14 +31,15 @@ def SymmetryWall(parameters, vars):
 		for j in range(0,h):
 			x = 6*pi*i/w
 			y = 6*pi*j/h
-			uv = Sym3(x,y)
-			u = (uv[0]+3)/6
-			v = (uv[1]+3)/6
+			uv = Sum(Sym2(x,y, 2*pi*0), Sym3(x,y, 2*pi*0), t)
+			#uv =  Sym3(x,y, 2*pi*t)
+			u = (uv[0]+1)/2
+			v = (uv[1]+1)/2
 			z = (u+v)/2
 			r = int(u*255)%255
-			g = int(v*8)*32
+			g = int((2 - v - u)*100)%255
 			b = int(v*255)%255
-			pim.putpixel((i,j), (r,g,b,200))
+			pim.putpixel((i,j), (r,g,b,225))
 
 	#Z = (2*math.pi*i/M for i in range(0, int(M)))
 	#lines = ([FF(z, t, K, K1, K2), FF(z + shift, t, K, K1, K2), "blue"] for z in Z)
@@ -55,15 +56,32 @@ def SymmetryWall(parameters, vars):
 	#drw.flush()
 	return pim
 
+def Sum(xy1,xy2,t):
+	u = t*xy1[0] + (1-t)*xy2[0]
+	v = t*xy1[1] + (1-t)*xy2[1]
+	return (u,v)
+
 def Fit(w, h, r, xy):
 	return (w/2 + r*xy[0], h/2 + r*xy[1])	
 
-def Sym3(x, y):
+def Sym2(x, y, t = 0):
+	#x = xy[0]
+	#y = xy[1]
+	X = x + y/ math.sqrt(3)
+	Y = 2*y/ math.sqrt(3)
+	#x3 = x * math.sqrt(3)/2
+	u = cos(X+Y) 
+	v = sin(X+Y) 
+	return (u,v)
+
+
+
+def Sym3(x, y, t = 0):
 	#x = xy[0]
 	#y = xy[1]
 	x3 = x * math.sqrt(3)/2
-	u = cos(y) + cos(-x3-y/2) + cos(x3-y/2)
-	v = sin(y) + sin(-x3-y/2) + sin(x3-y/2)
+	u = (cos(y) + cos(-x3-y/2+t) + cos(x3-y/2))/3
+	v = (sin(y) + sin(-x3-y/2+t) + sin(x3-y/2))/3
 	return (u,v)
 
 
