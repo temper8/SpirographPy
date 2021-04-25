@@ -31,10 +31,10 @@ def SymmetryWall(parameters, vars):
 		for j in range(0,h):
 			x = 6*pi*i/w
 			y = 6*pi*j/h
-			uv = Sum(Sym2(x,y, 2*pi*0), Sym3(x,y, 2*pi*0), t)
-			#uv =  Sym3(x,y, 2*pi*t)
-			u = (uv[0]+1)/2
-			v = (uv[1]+1)/2
+			#uv = Sum(Sym2(x,y, 2*pi*0), Sym3(x,y, 2*pi*0), t)
+			u, v = W(0,1,x,y)
+			u = (u+3)/6
+			v = (v+3)/6
 			z = (u+v)/2
 			r = int(u*255)%255
 			g = int((2 - v - u)*100)%255
@@ -64,15 +64,22 @@ def Sum(xy1,xy2,t):
 def Fit(w, h, r, xy):
 	return (w/2 + r*xy[0], h/2 + r*xy[1])	
 
-def Sym2(x, y, t = 0):
+def E(n, m, x, y):
 	#x = xy[0]
 	#y = xy[1]
-	X = x + y/ math.sqrt(3)
-	Y = 2*y/ math.sqrt(3)
+	X = n*(x + y/ math.sqrt(3))
+	Y = m*2*y/ math.sqrt(3)
 	#x3 = x * math.sqrt(3)/2
 	u = cos(X+Y) 
 	v = sin(X+Y) 
-	return (u,v)
+	return u,v
+
+def W(n, m, x, y):
+	nm = n+m
+	u1,v1= E(n,m,x,y)
+	u2,v2 = E(m,-nm,x,y)
+	u3,v3 = E(-nm,n,x,y)
+	return u1+u2+u3,v1+v2+v3
 
 
 
