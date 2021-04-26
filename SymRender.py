@@ -47,7 +47,7 @@ def E(n, m, x, y):
 	return np.exp(1j*(n*(x + y/ np.sqrt(3)) + m*2*y/ np.sqrt(3)))
 
 def W(n, m, x, y):
-	nm = n+m
+	nm = n + m
 	return  (E(n,m,x,y) + E(m,-nm,x,y) + E(-nm,n,x,y))/3
 
 
