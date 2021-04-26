@@ -25,13 +25,11 @@ def SymmetryWall(parameters, vars):
 	K1 = vars["K1"].get()
 	K2 = vars["K2"].get()
 	pim = Image.new('RGBA', (w, h), (0, 0, 0, 255))
-	#drw = aggdraw.Draw(pim)
-	#drw.setantialias(True)
 
 	X = np.linspace(0, 4*np.pi, w)
 	Y = np.linspace(0, 4*np.pi, h)
 	x, y = np.meshgrid(X, Y)
-	Z = W(1, 2, x, y)
+	Z = W(0, 1, x, y)
 
 	for i in range(0,w):
 		for j in range(0,h):
