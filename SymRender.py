@@ -5,6 +5,7 @@ import random
 import timeit
 import time
 import cairo
+import numpy as np
 
 from PIL import Image, ImageDraw, ImageTk
 from cairo import ImageSurface, Context, FORMAT_ARGB32
@@ -27,62 +28,29 @@ def SymmetryWall(parameters, vars):
 	#drw = aggdraw.Draw(pim)
 	#drw.setantialias(True)
 
+	X = np.linspace(0, 4*np.pi, w)
+	Y = np.linspace(0, 4*np.pi, h)
+	x, y = np.meshgrid(X, Y)
+	Z = W(1, 2, x, y)
+
 	for i in range(0,w):
 		for j in range(0,h):
-			x = 6*pi*i/w
-			y = 6*pi*j/h
-			#uv = Sum(Sym2(x,y, 2*pi*0), Sym3(x,y, 2*pi*0), t)
-			u1, v1 = W(1,2,x,y)
-			u2, v2 = W(0,1,x,y)
-			u = t*u1 + (1-t)*u2
-			v = t*v1 + (1-t)*v2
-			u = (u+1)/2
-			v = (v+1)/2
-			z = (u+v)/2
+			z = Z[i,j]
+			u = (np.real(z) + 1)/2
+			v = (np.imag(z) + 1)/2
 			r = int(u*255)%255
 			g = int((2 - v - u)*100)%255
 			b = int(v*255)%255
 			pim.putpixel((i,j), (r,g,b,225))
-
-	#Z = (2*math.pi*i/M for i in range(0, int(M)))
-	#lines = ([FF(z, t, K, K1, K2), FF(z + shift, t, K, K1, K2), "blue"] for z in Z)
-	#lines = ([Fit(w,h,r,li[0]), Fit(w,h,r,li[1]), li[2]] for li in lines)
-
-	#a = math.exp(0.6*math.log(100/M))
-	#alpha = int(a*255)
-	#thickness= 1.0*a + 0.7
-	#pen = aggdraw.Pen("blue", thickness, alpha)
-	#for li in lines:
-		#pen = aggdraw.Pen(l[2], thickness, alpha)
-	#	drw.line((li[0][0], li[0][1], li[1][0], li[1][1]), pen)
-	
-	#drw.flush()
 	return pim
 
-def Sum(xy1,xy2,t):
-	u = t*xy1[0] + (1-t)*xy2[0]
-	v = t*xy1[1] + (1-t)*xy2[1]
-	return (u,v)
-
-def Fit(w, h, r, xy):
-	return (w/2 + r*xy[0], h/2 + r*xy[1])	
 
 def E(n, m, x, y):
-	#x = xy[0]
-	#y = xy[1]
-	X = n*(x + y/ math.sqrt(3))
-	Y = m*2*y/ math.sqrt(3)
-	#x3 = x * math.sqrt(3)/2
-	u = cos(X+Y) 
-	v = sin(X+Y) 
-	return u,v
+	return np.exp(1j*(n*(x + y/ np.sqrt(3)) + m*2*y/ np.sqrt(3)))
 
 def W(n, m, x, y):
 	nm = n+m
-	u1,v1= E(n,m,x,y)
-	u2,v2 = E(m,-nm,x,y)
-	u3,v3 = E(-nm,n,x,y)
-	return (u1+u2+u3)/3, (v1+v2+v3)/3
+	return  (E(n,m,x,y) + E(m,-nm,x,y) + E(-nm,n,x,y))/3
 
 
 
