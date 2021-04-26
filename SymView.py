@@ -34,6 +34,7 @@ class SymView:
 		return var		
 
 	def __init__(self, root):
+		self.Colors = self.GeneratePalette(5000)
 		w = self.Parameters["Width"]
 		h = self.Parameters["Height"]
 		frame_a = tk.Frame()
@@ -76,7 +77,7 @@ class SymView:
 		tk.Button(frame_b, text = " stop ",  command = self.stop).pack(side="top")
 		tk.Button(frame_b, text = " plus ",  command = self.plus).pack(side="top")
 		tk.Button(frame_b, text = " Color palette ",  command = self.UpdatePalette).pack(side="top")
-		#self.GeneratePalette()
+		
 		#self.draw_init()
 		
 		self.RenderVar = tk.IntVar(name = "RenderType")
@@ -87,21 +88,36 @@ class SymView:
 
 		frame_a.pack(side="left")
 		frame_b.pack(side="left")
-		self.spiro = Spiro(self.Parameters)  
+		#self.spiro = Spiro(self.Parameters)  
 		self.Draw()
 
 	def update(self):
 		t = self.ani_count/400
 		#self.draw(t)
 
+	def GeneratePalette(self, COLORS_NUMBER):
+		bi = 64.0/256
+		Colors = []
+		for i in range(0, COLORS_NUMBER):
+			alpha = 30
+			r = (random.random()*(1.0 - bi) + bi)
+			g = (random.random()*(1.0 - bi) + bi)
+			b = (random.random()*(1.0 - bi) + bi)
+			m = 1 #max([r,g,b])
+			#print(m)
+			r = int(r/m*256)
+			g = int(g/m*256)
+			b = int(b/m*256)
+			# print(r,g,b)
+			Colors.append((r, g, b))
+		return Colors		
+
 	def UpdatePalette(self):
 		self.spiro.GeneratePalette()
 		self.Draw()
 
 	def Draw(self):
-		#pim = self.spiro.Render2(self.Vars)
-		pim = SymRender.SymmetryWall(self.Parameters, self.Vars)
-	
+		pim = SymRender.SymmetryWall(self.Parameters, self.Vars, self.Colors)
 		self.SaveImage(pim)
 		self.photo = ImageTk.PhotoImage(pim)
 		self.im = self.canvas.create_image(0,0, image=self.photo, anchor='nw')
@@ -132,11 +148,11 @@ class SymView:
 
 	def animate(self):
 		self.FPS()
-		t = self.ani_count/1000
+		t = self.ani_count/300
 		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 		self.ani_count +=  1
-		if not self.stop_flag and (self.ani_count<1000):
+		if not self.stop_flag and (self.ani_count<300):
 			self.canvas.after(10, self.animate) 
 
 	def start(self):
