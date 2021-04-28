@@ -24,25 +24,23 @@ def SymmetryWall(parameters, vars, colors):
 	K = vars["K"].get()
 	K1 = vars["K1"].get()
 	K2 = vars["K2"].get()
-	pim = Image.new('RGBA', (w, h), (0, 0, 0, 255))
+	#pim = Image.new('RGBA', (w, h), (0, 0, 0, 255))
 
 	X = np.linspace(0, 4*np.pi, w)
 	Y = np.linspace(0, 4*np.pi, h)
 	x, y = np.meshgrid(X, Y)
-	Z = W(0, 1, x, y)*cos(np.pi*t) + W(2, 1, x, y)*sin(np.pi*t)
+	Z = W(0, 1, x, y)*cos(np.pi*t) + W(2, 1, x, y)*sin(np.pi*t) + W(3, 2, x, y)*sin(2*np.pi*t)
 
-	clr_num = 28
+	clr_num = 16
+
+	U = (clr_num*(np.abs(Z) + 1)/2).astype(int)
+
+	data = np.zeros((h, w, 4), dtype=np.uint8)
+
 	for i in range(0,w):
 		for j in range(0,h):
-			z = Z[i,j]
-			u = (np.abs(z) + 1)/2
-			v = 1 #(np.angle(z)/np.pi + 1)/2
-			r = int(u*clr_num)
-			g = int((2 - v - u)*100)%255
-			b = int(v*clr_num)
-			clr = colors[r*clr_num + b]
-			#pim.putpixel((i,j), (r,g,b,225))
-			pim.putpixel((i,j), clr + (225,))
+			data[i][j] = colors[U[i,j]] + (225,)
+	pim = Image.fromarray(data, 'RGBA')
 	return pim
 
 
