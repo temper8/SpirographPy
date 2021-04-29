@@ -12,7 +12,22 @@ from cairo import ImageSurface, Context, FORMAT_ARGB32
 from math import sin, cos, pi
 from shapely.geometry import LineString
 
+def avg_clr(c1, c2, d, alpha):
+	r = int(c1[0]*(1-d) + c2[0]*d)
+	g = int(c1[1]*(1-d) + c2[1]*d)
+	b = int(c1[2]*(1-d) + c2[2]*d)
+	return (r,g,b,alpha)
 
+def GeneratePalette2(colors, clr_num):
+	N = (clr_num+10) * 200
+	pal = np.zeros((N, 4), dtype=np.uint8)
+	for i in range(0, clr_num + 10):
+		c1 = colors[i]
+		c2 = colors[i+1]
+		for j in range(0, 200):
+			d = float(j)/200
+			pal[i*200+j] = avg_clr(c1,c2,d,225)
+	return pal		
 
 def SymmetryWall(parameters, vars, colors):
 	w = parameters["Width"]
@@ -29,20 +44,22 @@ def SymmetryWall(parameters, vars, colors):
 	X = np.linspace(0, 4*np.pi, w)
 	Y = np.linspace(0, 4*np.pi, h)
 	x, y = np.meshgrid(X, Y)
-	Z = W(0, 1, x, y)*cos(np.pi*t) + W(2, 1, x, y)*sin(np.pi*t) + W(3, 2, x, y)*sin(2*np.pi*t)
+	Z = W(0, 1, x, y)*cos(np.pi*t) + W(2, 1, x, y)*sin(np.pi*t) + W(2, 2, x, y)*sin(2*np.pi*t)
 
-	clr_num = 16
+	clr_num = 32
+	A = (np.abs(Z) + 1.5)/3
+	print(np.amax(A))
+	U = (clr_num*A*200).astype(int)
 
-	U = (clr_num*(np.abs(Z) + 1)/2).astype(int)
+	pal = GeneratePalette2(colors, clr_num)
 
 	data = np.zeros((h, w, 4), dtype=np.uint8)
 
 	for i in range(0,w):
 		for j in range(0,h):
-			data[i][j] = colors[U[i,j]] + (225,)
+			data[i][j] =pal[U[i,j]]
 	pim = Image.fromarray(data, 'RGBA')
 	return pim
-
 
 def E(n, m, x, y):
 	return np.exp(1j*(n*(x + y/ np.sqrt(3)) + m*2*y/ np.sqrt(3)))
