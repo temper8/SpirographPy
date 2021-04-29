@@ -148,11 +148,11 @@ class SymView:
 
 	def animate(self):
 		self.FPS()
-		t = self.ani_count/300
+		t = self.ani_count/500
 		self.Vars["Time"].set(t)
 		self.label_a["text"] = "t = " + "{:5.3f}".format(t)
 		self.ani_count +=  1
-		if not self.stop_flag and (self.ani_count<300):
+		if not self.stop_flag and (self.ani_count<500):
 			self.canvas.after(10, self.animate) 
 
 	def start(self):
