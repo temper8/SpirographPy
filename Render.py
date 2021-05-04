@@ -9,7 +9,7 @@ import cairo
 from PIL import Image, ImageDraw, ImageTk
 from cairo import ImageSurface, Context, FORMAT_ARGB32
 from math import sin, cos, pi
-from shapely.geometry import LineString
+#from shapely.geometry import LineString
 
 
 
@@ -271,17 +271,17 @@ class Spiro:
 			self.context.set_line_width(2.0)
 			self.context.stroke()
 
-	def poly(self, a, b):
-		line1 = LineString([a[0], a[1]]) 
-		line2 = LineString([b[0], b[1]]) 
-		p = line1.intersection(line2)
-		if p:
-			#print(p.x,p.y) 
-			pn = [a[0], b[0], (p.x, p.y) ,a[1], b[1]]
-		else:
-			pn = [a[0], a[1], b[1], b[0]]
-
-		return pn
+#	def poly(self, a, b):
+#		line1 = LineString([a[0], a[1]]) 
+#		line2 = LineString([b[0], b[1]]) 
+#		p = line1.intersection(line2)
+#		if p:
+#			#print(p.x,p.y) 
+#			pn = [a[0], b[0], (p.x, p.y) ,a[1], b[1]]
+#		else:
+#			pn = [a[0], a[1], b[1], b[0]]
+#
+#		return pn
 
 	def draw_cr_test(self):
 		for i in range(100):
