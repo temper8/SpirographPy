@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageTk
 from cairo import ImageSurface, Context, FORMAT_ARGB32
 from math import sin, cos, pi
-from shapely.geometry import LineString
+#from shapely.geometry import LineString
 
 def avg_clr(c1, c2, d, alpha):
 	r = int(c1[0]*(1-d) + c2[0]*d)
@@ -19,9 +19,9 @@ def avg_clr(c1, c2, d, alpha):
 	return (r,g,b,alpha)
 
 def GeneratePalette2(colors, clr_num):
-	N = (clr_num+10) * 200
+	N = (clr_num+30) * 200
 	pal = np.zeros((N, 4), dtype=np.uint8)
-	for i in range(0, clr_num + 10):
+	for i in range(0, clr_num + 30):
 		c1 = colors[i]
 		c2 = colors[i+1]
 		for j in range(0, 200):
@@ -41,22 +41,22 @@ def SymmetryWall(parameters, vars, colors):
 	K2 = vars["K2"].get()
 	#pim = Image.new('RGBA', (w, h), (0, 0, 0, 255))
 
-	X = np.linspace(0, 4*np.pi, w)
-	Y = np.linspace(0, 4*np.pi, h)
+	X = np.linspace(0, 3*np.pi, w)
+	Y = np.linspace(0, 3*np.pi*h/w, h)
 	x, y = np.meshgrid(X, Y)
-	Z = W(0, 1, x, y)*cos(np.pi*t) + W(2, 1, x, y)*sin(np.pi*t) + W(2, 2, x, y)*sin(2*np.pi*t)
+	Z = W(0, 1, x, y)*cos(2*np.pi*t) + W(2, 0, x, y)*sin(2*np.pi*t) + W(3, 1, x, y)*sin(4*np.pi*t)
 
-	clr_num = 32
+	clr_num = 54
 	A = (np.abs(Z) + 1.5)/3
-	print(np.amax(A))
+	#print(np.amax(A))
 	U = (clr_num*A*200).astype(int)
 
 	pal = GeneratePalette2(colors, clr_num)
 
 	data = np.zeros((h, w, 4), dtype=np.uint8)
 
-	for i in range(0,w):
-		for j in range(0,h):
+	for i in range(0,h):
+		for j in range(0,w):
 			data[i][j] =pal[U[i,j]]
 	pim = Image.fromarray(data, 'RGBA')
 	return pim
@@ -304,18 +304,18 @@ class Spiro:
 			self.context.set_source_rgba(0.8, 0, 0, 0.1)
 			self.context.set_line_width(2.0)
 			self.context.stroke()
-
-	def poly(self, a, b):
-		line1 = LineString([a[0], a[1]]) 
-		line2 = LineString([b[0], b[1]]) 
-		p = line1.intersection(line2)
-		if p:
-			#print(p.x,p.y) 
-			pn = [a[0], b[0], (p.x, p.y) ,a[1], b[1]]
-		else:
-			pn = [a[0], a[1], b[1], b[0]]
-
-		return pn
+#
+#	def poly(self, a, b):
+#		line1 = LineString([a[0], a[1]]) 
+#		line2 = LineString([b[0], b[1]]) 
+#		p = line1.intersection(line2)
+#			#print(p.x,p.y) 
+#			pn = [a[0], b[0], (p.x, p.y) ,a[1], b[1]]
+#		else:
+#			pn = [a[0], a[1], b[1], b[0]]
+#
+#		return pn
+#
 
 	def draw_cr_test(self):
 		for i in range(100):
