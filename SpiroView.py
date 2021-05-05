@@ -105,7 +105,7 @@ class SpiroView:
 
 	def SaveImage(self, pim):
 		if self.saveFlag.get():
-			fn = "tmp\\{0:05d}.png".format(self.ani_count)
+			fn = "tmp\/{0:05d}.png".format(self.ani_count)
 			print(fn)
 			pim.save(fn, "PNG")
 
